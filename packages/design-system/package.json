@@ -1,0 +1,9 @@
+{
+  "name": "@domus/design-system",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": { "./tokens.css": "./src/tokens.css" },
+  "scripts": { "typecheck": "tsc --noEmit -p tsconfig.json" },
+  "devDependencies": { "typescript": "^5.8.3" }
+}
+

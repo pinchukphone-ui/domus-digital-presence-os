@@ -1,0 +1,7 @@
+{
+  "name": "@domus/preview",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deployment profile for the shared public-web image with PREVIEW_MODE=true"
+}
+

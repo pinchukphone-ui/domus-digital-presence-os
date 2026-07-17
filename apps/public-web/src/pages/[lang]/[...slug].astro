@@ -1,0 +1,13 @@
+---
+import { getMortgageHub } from '@domus/api-client';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageView from '../../components/PageView.astro';
+
+const preview = process.env.PREVIEW_MODE === 'true';
+const hub = await getMortgageHub({ includeDrafts: preview });
+const path = `/${Astro.params.lang}/${Astro.params.slug}`.replace(/\/$/, '');
+const page = hub.pages.find((item) => item.canonicalPath === path);
+if (!page || (!preview && page.status !== 'published')) return Astro.redirect('/404', 302);
+const allPages = hub.pages;
+---
+<BaseLayout {page} {allPages} {preview}><PageView {page} /></BaseLayout>

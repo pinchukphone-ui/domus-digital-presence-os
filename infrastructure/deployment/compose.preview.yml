@@ -1,0 +1,18 @@
+name: domus-presence-preview
+services:
+  preview:
+    image: ${WEB_IMAGE:?WEB_IMAGE must be an immutable GHCR digest}
+    restart: unless-stopped
+    environment:
+      CONTENT_SOURCE: directus
+      DIRECTUS_INTERNAL_URL: ${DIRECTUS_INTERNAL_URL}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      PREVIEW_SITE_URL: ${PREVIEW_SITE_URL}
+      PREVIEW_MODE: "true"
+    ports: ["127.0.0.1:4322:4321"]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4321/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+

@@ -1,0 +1,97 @@
+name: domus-presence
+services:
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../database/migrations/001_content_schema.sql:/docker-entrypoint-initdb.d/10-content-schema.sql:ro
+      - ../database/seeds/001_mortgage_hub.sql:/docker-entrypoint-initdb.d/20-mortgage-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  directus:
+    image: directus/directus:11.17.4
+    restart: unless-stopped
+    ports: ["8055:8055"]
+    depends_on:
+      database: { condition: service_healthy }
+    environment:
+      SECRET: ${DIRECTUS_SECRET}
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
+      ADMIN_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      DB_CLIENT: pg
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_DATABASE: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL}
+      TELEMETRY: "false"
+      WEBSOCKETS_ENABLED: "true"
+      CACHE_SCHEMA: "false"
+    volumes:
+      - ../../apps/directus/uploads:/directus/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8055/server/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 30s
+
+  directus-metadata:
+    image: postgres:16-alpine
+    depends_on:
+      directus: { condition: service_healthy }
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ../database/bootstrap:/bootstrap:ro
+    command: ["psql", "-h", "database", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}", "-v", "ON_ERROR_STOP=1", "-f", "/bootstrap/001_directus_metadata.sql"]
+
+  public-web:
+    build: { context: ../.., dockerfile: apps/public-web/Dockerfile }
+    restart: unless-stopped
+    ports: ["4321:4321"]
+    depends_on:
+      directus-metadata: { condition: service_completed_successfully }
+    environment:
+      CONTENT_SOURCE: directus
+      DIRECTUS_INTERNAL_URL: http://directus:8055
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      PREVIEW_MODE: "false"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4321/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  preview:
+    build: { context: ../.., dockerfile: apps/public-web/Dockerfile }
+    restart: unless-stopped
+    ports: ["4322:4321"]
+    depends_on:
+      directus-metadata: { condition: service_completed_successfully }
+    environment:
+      CONTENT_SOURCE: directus
+      DIRECTUS_INTERNAL_URL: http://directus:8055
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      PREVIEW_SITE_URL: ${PREVIEW_SITE_URL}
+      PREVIEW_MODE: "true"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4321/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  postgres-data:

@@ -1,0 +1,67 @@
+name: Build and deploy pilot
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}/public-web
+          tags: type=sha,format=long
+      - id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/public-web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+  production:
+    needs: image
+    if: vars.DEPLOY_HOST != ''
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.PRODUCTION_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+      - name: Deploy immutable digest
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          WEB_IMAGE: ghcr.io/${{ github.repository }}/public-web@${{ needs.image.outputs.digest }}
+        run: ssh "$DEPLOY_USER@$DEPLOY_HOST" "cd '$DEPLOY_PATH' && WEB_IMAGE='$WEB_IMAGE' docker compose -f infrastructure/deployment/compose.production.yml pull && WEB_IMAGE='$WEB_IMAGE' docker compose -f infrastructure/deployment/compose.production.yml up -d"
+      - name: Live verification
+        env:
+          PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
+        run: |
+          curl --fail --retry 12 --retry-delay 5 "$PRODUCTION_URL/healthz"
+          curl --fail "$PRODUCTION_URL/pl/kredyty-hipoteczne" | grep -q '<link rel="canonical"'
+

@@ -1,0 +1,2 @@
+{ "name": "@domus/directus", "version": "0.1.0", "private": true, "description": "Directus configuration, uploads and schema snapshots" }
+

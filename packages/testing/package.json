@@ -1,0 +1,8 @@
+{
+  "name": "@domus/testing",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "dependencies": { "@domus/api-client": "workspace:*", "@domus/seo": "workspace:*" },
+  "devDependencies": { "@types/node": "^22.15.0", "typescript": "^5.8.3" }
+}

@@ -1,0 +1,22 @@
+---
+import type { Page } from '@domus/content-model';
+import { MortgageCalculator } from './MortgageCalculator';
+const { page } = Astro.props as { page: Page };
+---
+<main id="content">
+  <nav class="breadcrumbs" aria-label={page.language === 'pl' ? 'Okruszki' : 'Навигационная цепочка'}>
+    {page.breadcrumbs.map((item, index) => <><a href={item.href}>{item.label}</a>{index < page.breadcrumbs.length - 1 && <span aria-hidden="true">/</span>}</>)}
+  </nav>
+  {page.blocks.map((block) => block.kind === 'hero' ? (
+    <section class="hero"><p class="eyebrow">DOMUS · Mortgage</p><h1>{block.heading}</h1><p>{block.body}</p></section>
+  ) : (
+    <section class:list={['block', `block--${block.kind}`]} id={typeof block.data.formId === 'string' ? block.data.formId : undefined}>
+      {block.heading && (page.blocks.some((item) => item.kind === 'hero') ? <h2>{block.heading}</h2> : <h1>{block.heading}</h1>)}
+      {block.body && <p>{block.body}</p>}
+      {block.kind === 'calculator' && <MortgageCalculator language={page.language} client:load />}
+      {block.kind === 'service' && <form class="demo-form"><label>{page.language === 'pl' ? 'E-mail' : 'Эл. почта'}<input type="email" disabled placeholder="demo@example.com" /></label><button type="submit" disabled>{page.language === 'pl' ? 'Wersja demonstracyjna' : 'Демонстрационная версия'}</button></form>}
+    </section>
+  ))}
+  {page.links.length > 0 && <section class="links"><h2>{page.language === 'pl' ? 'Czytaj dalej' : 'Читайте дальше'}</h2><ul>{page.links.map((link) => <li><a href={link.href}>{link.label}<span aria-hidden="true">→</span></a></li>)}</ul></section>}
+  {page.cta && <aside class="cta"><p>{page.language === 'pl' ? 'Potrzebujesz uporządkować kolejne kroki?' : 'Хотите структурировать следующие шаги?'}</p><a href={page.cta.href}>{page.cta.label}</a></aside>}
+</main>

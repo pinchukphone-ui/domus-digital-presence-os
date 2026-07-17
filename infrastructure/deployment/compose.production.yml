@@ -1,0 +1,18 @@
+name: domus-presence-production
+services:
+  public-web:
+    image: ${WEB_IMAGE:?WEB_IMAGE must be an immutable GHCR digest}
+    restart: unless-stopped
+    environment:
+      CONTENT_SOURCE: directus
+      DIRECTUS_INTERNAL_URL: ${DIRECTUS_INTERNAL_URL}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
+      PREVIEW_MODE: "false"
+    ports: ["127.0.0.1:4321:4321"]
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:4321/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
