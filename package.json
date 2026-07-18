@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@9.15.4",
-  "engines": { "node": ">=22" },
+  "engines": { "node": ">=22.12.0" },
   "scripts": {
     "dev": "pnpm --filter @domus/public-web dev",
     "build": "pnpm -r --if-present build",
@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "validate": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm validate:content",
+    "audit:dependencies": "pnpm audit --audit-level high",
+    "validate": "pnpm audit:dependencies && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm validate:content",
     "validate:content": "tsx packages/testing/src/validate-content.ts",
     "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/migrations/001_content_schema.sql",
     "db:seed": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/seeds/001_mortgage_hub.sql",

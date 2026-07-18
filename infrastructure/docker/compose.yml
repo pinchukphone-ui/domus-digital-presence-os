@@ -20,7 +20,7 @@ services:
   directus:
     image: directus/directus:11.17.4
     restart: unless-stopped
-    ports: ["8055:8055"]
+    ports: ["127.0.0.1:8055:8055"]
     depends_on:
       database: { condition: service_healthy }
     environment:
@@ -60,7 +60,7 @@ services:
   public-web:
     build: { context: ../.., dockerfile: apps/public-web/Dockerfile }
     restart: unless-stopped
-    ports: ["4321:4321"]
+    ports: ["127.0.0.1:4321:4321"]
     depends_on:
       directus-metadata: { condition: service_completed_successfully }
     environment:
@@ -78,7 +78,7 @@ services:
   preview:
     build: { context: ../.., dockerfile: apps/public-web/Dockerfile }
     restart: unless-stopped
-    ports: ["4322:4321"]
+    ports: ["127.0.0.1:4322:4321"]
     depends_on:
       directus-metadata: { condition: service_completed_successfully }
     environment:
