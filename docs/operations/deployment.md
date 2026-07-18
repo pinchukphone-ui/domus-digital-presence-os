@@ -1,12 +1,34 @@
 # Deployment
 
+## Выбранный контур этапа 1
+
+Пилот разворачивается на одном Hetzner Cloud VPS в `nbg1` (Германия): Docker
+Compose, Caddy для TLS/reverse proxy, PostgreSQL 16, Directus и два независимых
+Astro runtime (`preview` и `production`). Production и preview используют разные
+Unix-пользователи и разные SSH deployment keys. База и Directus uploads должны
+иметь persistent volumes; резервные копии хранятся вне VPS.
+
+Это сознательно односерверный vertical slice, а не целевая high-availability
+архитектура. Он повторяет локальный Docker-контур и существующий immutable GHCR
+deployment без добавления оркестратора или микросервисов. Решение и границы
+описаны в `docs/architecture/deployment-platform-decision.md`.
+
 ## Предварительная настройка
 
-1. Создайте GitHub remote и GHCR package.
-2. Создайте environments `preview` и `production`; для production включите required reviewer и запрет self-review.
-3. На хосте установите Docker/Compose, TLS reverse proxy и создайте закрытый `.env`.
-4. Добавьте GitHub variables `PREVIEW_BASE_DOMAIN`, `PRODUCTION_URL`, `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH`; secrets `DEPLOY_SSH_KEY`, `DEPLOY_KNOWN_HOSTS`.
-5. Preview hostname должен быть закрыт SSO/basic auth; proxy добавляет `X-Robots-Tag: noindex, nofollow, noarchive`.
+1. Создайте Hetzner Cloud VPS с firewall и backups; для пилота — shared x86,
+   минимум 2 vCPU / 4 GB RAM. Добавьте оба публичных deployment key из GitHub
+   environment variables `DEPLOY_SSH_PUBLIC_KEY` соответствующим Unix-пользователям.
+2. Установите Docker/Compose и Caddy, создайте закрытые runtime `.env` и persistent
+   volumes. Секреты PostgreSQL/Directus остаются только на хосте.
+3. После назначения адреса добавьте отдельно в каждый GitHub Environment variables
+   `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PATH` и `PREVIEW_URL`/`PRODUCTION_URL`.
+4. Получите host key напрямую с созданного VPS, проверьте fingerprint в Hetzner
+   Console и добавьте environment secret `DEPLOY_KNOWN_HOSTS`. Не используйте
+   непроверенный результат сетевого `ssh-keyscan`.
+5. Preview hostname закройте SSO/basic auth; Caddy добавляет
+   `X-Robots-Tag: noindex, nofollow, noarchive`.
+6. Только после Reviewer approval и успешного preview установите repository
+   variable `DEPLOYMENT_ENABLED=true`. До этого deploy jobs всегда skipped.
 
 ## Поток
 
@@ -19,4 +41,7 @@
 
 ## Текущее состояние URL
 
-Внешняя инфраструктура, домены и GitHub remote не предоставлены, поэтому preview и production-пилот не развернуты. Локальные адреса не являются production URL.
+GitHub remote, environments, branch protection и раздельные SSH deployment keys
+подготовлены. `DEPLOYMENT_ENABLED=false`; VPS, домены, `DEPLOY_HOST`, URL и
+проверенный `DEPLOY_KNOWN_HOSTS` ещё не созданы. Поэтому preview и production-пилот
+не развернуты, а локальные адреса не являются внешними URL.
