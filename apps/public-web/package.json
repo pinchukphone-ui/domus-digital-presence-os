@@ -10,7 +10,7 @@
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@astrojs/node": "^9.3.0",
+    "@astrojs/node": "^10.0.5",
     "@astrojs/react": "^4.3.0",
     "@astrojs/sitemap": "^3.4.1",
     "@domus/api-client": "workspace:*",
