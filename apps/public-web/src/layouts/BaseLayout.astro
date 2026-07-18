@@ -6,6 +6,10 @@ import { absoluteUrl, alternatePages } from '@domus/seo';
 const { page, allPages, preview = false } = Astro.props as { page: Page; allPages: Page[]; preview?: boolean };
 const origin = preview ? (process.env.PREVIEW_SITE_URL ?? 'http://localhost:4322') : (process.env.PUBLIC_SITE_URL ?? 'http://localhost:4321');
 const alternates = alternatePages(page, allPages);
+const isPolish = page.language === 'pl';
+const homePath = isPolish ? '/pl/kredyty-hipoteczne' : '/ru/ipoteka';
+const polishPath = alternates.find((item) => item.language === 'pl')?.path ?? '/pl/kredyty-hipoteczne';
+const russianPath = alternates.find((item) => item.language === 'ru')?.path ?? '/ru/ipoteka';
 ---
 <!doctype html>
 <html lang={page.language}>
@@ -20,10 +24,16 @@ const alternates = alternatePages(page, allPages);
     {alternates.find((item) => item.language === 'pl') && <link rel="alternate" hreflang="x-default" href={absoluteUrl(origin, alternates.find((item) => item.language === 'pl')!.path)} />}
   </head>
   <body>
+    <a class="skip-link" href="#content">{isPolish ? 'Przejdź do treści' : 'Перейти к содержанию'}</a>
     {preview && <div class="preview-banner" role="status">PREVIEW · draft content · noindex</div>}
-    <header class="site-header"><a class="brand" href={page.language === 'pl' ? '/pl/kredyty-hipoteczne' : '/ru/ipoteka'}>DOMUS <span>GLOBAL</span></a><nav><a href="/pl/kredyty-hipoteczne" hreflang="pl">PL</a><a href="/ru/ipoteka" hreflang="ru">RU</a></nav></header>
+    <header class="site-header">
+      <a class="brand" href={homePath} aria-label={isPolish ? 'DOMUS Global — strona główna' : 'DOMUS Global — главная'}>DOMUS <span>GLOBAL</span></a>
+      <nav aria-label={isPolish ? 'Wybór języka' : 'Выбор языка'}>
+        <a href={polishPath} hreflang="pl" lang="pl" aria-current={isPolish ? 'page' : undefined} aria-label="Polski">PL</a>
+        <a href={russianPath} hreflang="ru" lang="ru" aria-current={!isPolish ? 'page' : undefined} aria-label="Русский">RU</a>
+      </nav>
+    </header>
     <slot />
-    <footer><div><strong>DOMUS GLOBAL</strong><p>{page.language === 'pl' ? 'Pilotaż niezależnego huba informacyjnego.' : 'Пилот независимого информационного хаба.'}</p></div><p>© 2026</p></footer>
+    <footer><div><strong>DOMUS GLOBAL</strong><p>{isPolish ? 'Informacje o kredytach hipotecznych w Polsce.' : 'Информация об ипотечных кредитах в Польше.'}</p></div><p>© 2026</p></footer>
   </body>
 </html>
-
