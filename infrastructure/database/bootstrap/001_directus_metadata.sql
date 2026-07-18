@@ -1,7 +1,13 @@
-\getenv frontend_token DIRECTUS_FRONTEND_TOKEN
-\if :{?frontend_token}
+\getenv public_token DIRECTUS_PUBLIC_TOKEN
+\if :{?public_token}
 \else
-  \echo 'DIRECTUS_FRONTEND_TOKEN is required'
+  \echo 'DIRECTUS_PUBLIC_TOKEN is required'
+  \quit 3
+\endif
+\getenv preview_token DIRECTUS_PREVIEW_TOKEN
+\if :{?preview_token}
+\else
+  \echo 'DIRECTUS_PREVIEW_TOKEN is required'
   \quit 3
 \endif
 
@@ -30,10 +36,16 @@ ON CONFLICT (collection) DO UPDATE SET
 
 INSERT INTO directus_roles (id, name, icon, description)
 VALUES (
-  '31ff6ef4-7e93-445a-9d7e-2f3e160c257e',
-  'DOMUS Frontend',
+  '5367c7ad-78b8-4a93-9059-0c5eafc55b21',
+  'DOMUS Public Renderer',
   'language',
-  'Server-side public and preview rendering; no Data Studio access'
+  'Server-side published-content rendering; no Data Studio access'
+),
+(
+  '42a6e783-13fb-4e5c-bd4b-a02ad59e67ae',
+  'DOMUS Preview Renderer',
+  'preview',
+  'Server-side draft preview rendering; no Data Studio access'
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -43,10 +55,19 @@ ON CONFLICT (id) DO UPDATE SET
 INSERT INTO directus_policies
   (id, name, icon, description, enforce_tfa, admin_access, app_access)
 VALUES (
-  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
-  'DOMUS Frontend Read',
+  'cd1a1d45-086a-4d18-a5ae-44d0066e47e4',
+  'DOMUS Public Read',
   'visibility',
-  'Read-only access to collections required by Astro rendering',
+  'Read-only public renderer access; version snapshots excluded',
+  false,
+  false,
+  false
+),
+(
+  'bc52e31f-aa95-4ca3-b624-7011a2764b92',
+  'DOMUS Preview Read',
+  'preview',
+  'Read-only access to published and draft Astro content snapshots',
   false,
   false,
   false
@@ -61,9 +82,15 @@ ON CONFLICT (id) DO UPDATE SET
 
 INSERT INTO directus_access (id, role, policy, sort)
 VALUES (
-  '619cc573-b8c4-4f87-9e6b-08acbb625e8a',
-  '31ff6ef4-7e93-445a-9d7e-2f3e160c257e',
-  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
+  '83db78fd-02cb-4055-a710-c9d71424ecf5',
+  '5367c7ad-78b8-4a93-9059-0c5eafc55b21',
+  'cd1a1d45-086a-4d18-a5ae-44d0066e47e4',
+  1
+),
+(
+  '72d6e9ba-c4dc-43ad-83d2-1d38fc816a5a',
+  '42a6e783-13fb-4e5c-bd4b-a02ad59e67ae',
+  'bc52e31f-aa95-4ca3-b624-7011a2764b92',
   1
 )
 ON CONFLICT (id) DO UPDATE SET
@@ -76,29 +103,53 @@ INSERT INTO directus_users
 VALUES (
   '261d41fb-af8c-4596-8758-fc1cf52e061e',
   'DOMUS',
-  'Frontend',
-  'frontend-service@domus.local',
+  'Public Renderer',
+  'public-renderer@domus.local',
   'active',
-  '31ff6ef4-7e93-445a-9d7e-2f3e160c257e',
-  :'frontend_token',
+  '5367c7ad-78b8-4a93-9059-0c5eafc55b21',
+  :'public_token',
+  'default',
+  false,
+  'auto'
+),
+(
+  '37dd3ba5-abf4-47c3-bd74-854cb379ca6a',
+  'DOMUS',
+  'Preview Renderer',
+  'preview-renderer@domus.local',
+  'active',
+  '42a6e783-13fb-4e5c-bd4b-a02ad59e67ae',
+  :'preview_token',
   'default',
   false,
   'auto'
 )
-ON CONFLICT (email) DO UPDATE SET
+ON CONFLICT (id) DO UPDATE SET
   first_name = EXCLUDED.first_name,
   last_name = EXCLUDED.last_name,
+  email = EXCLUDED.email,
   status = 'active',
   role = EXCLUDED.role,
   token = EXCLUDED.token,
   email_notifications = false;
 
 DELETE FROM directus_permissions
-WHERE policy = 'abfd2755-dd92-43cb-b016-3fabd5d49cd0';
+WHERE policy IN (
+  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
+  'cd1a1d45-086a-4d18-a5ae-44d0066e47e4',
+  'bc52e31f-aa95-4ca3-b624-7011a2764b92'
+);
+
+INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
+VALUES
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'pages', 'read', NULL, NULL, NULL, '*'),
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'content_blocks', 'read', NULL, NULL, NULL, '*'),
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'internal_links', 'read', NULL, NULL, NULL, '*'),
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'ctas', 'read', NULL, NULL, NULL, '*');
 
 INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
 SELECT
-  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
+  'bc52e31f-aa95-4ca3-b624-7011a2764b92',
   collection,
   'read',
   NULL,
@@ -111,6 +162,18 @@ FROM (VALUES
   ('internal_links'),
   ('ctas'),
   ('language_versions')
-) AS frontend_collections(collection);
+) AS preview_collections(collection);
+
+DELETE FROM directus_access
+WHERE id = '619cc573-b8c4-4f87-9e6b-08acbb625e8a';
+
+DELETE FROM directus_access
+WHERE id = '94b31787-4727-49b4-9c39-39a0caeff1a0';
+
+DELETE FROM directus_policies
+WHERE id = 'abfd2755-dd92-43cb-b016-3fabd5d49cd0';
+
+DELETE FROM directus_roles
+WHERE id = '31ff6ef4-7e93-445a-9d7e-2f3e160c257e';
 
 COMMIT;

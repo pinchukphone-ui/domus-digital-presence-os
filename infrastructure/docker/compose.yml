@@ -62,7 +62,8 @@ services:
       directus: { condition: service_healthy }
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
-      DIRECTUS_FRONTEND_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
+      DIRECTUS_PUBLIC_TOKEN: ${DIRECTUS_PUBLIC_TOKEN}
+      DIRECTUS_PREVIEW_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}
     volumes:
       - ../database/bootstrap:/bootstrap:ro
     command: ["psql", "-h", "database", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}", "-v", "ON_ERROR_STOP=1", "-f", "/bootstrap/001_directus_metadata.sql"]
@@ -76,7 +77,7 @@ services:
     environment:
       CONTENT_SOURCE: directus
       DIRECTUS_INTERNAL_URL: http://directus:8055
-      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PUBLIC_TOKEN}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       PREVIEW_MODE: "false"
     healthcheck:
@@ -94,7 +95,7 @@ services:
     environment:
       CONTENT_SOURCE: directus
       DIRECTUS_INTERNAL_URL: http://directus:8055
-      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}
       PREVIEW_SITE_URL: ${PREVIEW_SITE_URL}
       PREVIEW_MODE: "true"
     healthcheck:
