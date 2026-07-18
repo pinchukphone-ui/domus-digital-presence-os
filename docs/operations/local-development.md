@@ -11,6 +11,8 @@
 
 Первый старт применяет `001_content_schema.sql` и `001_mortgage_hub.sql`. Init scripts PostgreSQL выполняются только на пустом volume. Для повторного применения используйте `DATABASE_URL` и команды `pnpm db:migrate`/`pnpm db:seed`; seed рассчитан на чистую БД.
 
+Локальный PostgreSQL основан на официальном `16.14-alpine3.24`, закреплённом по digest. Минимальный производный image заменяет только startup-helper `gosu` на пакет Alpine `su-exec`; CI проверяет, что `gosu` отсутствует и сброс привилегий работает.
+
 ## Быстрый frontend без Docker
 
 ```bash
