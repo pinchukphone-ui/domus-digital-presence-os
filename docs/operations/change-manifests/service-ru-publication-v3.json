@@ -1,0 +1,16 @@
+{
+  "change_task": "Publish Russian mortgage consultation",
+  "target_page_id": "service-ru",
+  "language": "ru",
+  "review_status": "Approved",
+  "content_version": 3,
+  "rollback_version": 2,
+  "publication_scope": "local_only",
+  "public_url": "http://localhost:4321/ru/ipoteka/konsultaciya",
+  "preview_url": "http://localhost:4322/ru/ipoteka/konsultaciya",
+  "source_pull_request": "https://github.com/pinchukphone-ui/domus-digital-presence-os/pull/12",
+  "source_commit": "a6753b7f2deb8a93f28d2aa02b2f390bd6eb32da",
+  "source_image_digest": "sha256:d9d8a6c9e5a57250d4c9ec41636206331cc315159715e60a9eda164686d3c2d5",
+  "external_deployment": false,
+  "rollback_reference": "language_versions:service-ru:2"
+}

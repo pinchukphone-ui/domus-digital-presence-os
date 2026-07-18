@@ -10,7 +10,7 @@
 - Та же draft-страница в public: redirect на 404.
 - `/sitemap.xml`: HTTP 200, 7 URL.
 - Browser E2E: 5/5 — published hub/links/SEO, React calculator, consultation demo и preview boundary.
-- Unit tests: 10/10; typecheck, lint, Astro build и content validation прошли.
+- Unit tests: 13/13; typecheck, lint, Astro build и content validation прошли.
 
 ## Russian consultation review candidate
 
@@ -21,6 +21,18 @@
 - `service-ru` остаётся `draft`: candidate виден в preview с `noindex`, public продолжает возвращать redirect на `/404`.
 - Чистый bootstrap schema → seed → content change проверен на отдельной временной БД; после readback временная БД удалена.
 - Документированная команда `pnpm db:prepare-service-ru-review` проверена без локального `psql`: wrapper применил idempotent change через Docker Compose.
+
+## Russian consultation local publication
+
+- Reviewer status: `Approved`; content version 3 опубликована только в локальном public-контуре.
+- Источник: commit `a6753b7f2deb8a93f28d2aa02b2f390bd6eb32da`, image digest `sha256:d9d8a6c9e5a57250d4c9ec41636206331cc315159715e60a9eda164686d3c2d5`.
+- `service-ru`: page/version `published`, ChangeTask `approved`; статус `deployed` не используется без внешнего deployment.
+- Public URL `/ru/ipoteka/konsultaciya`: HTTP 200, `index,follow`, один H1, self-canonical, PL/RU/x-default hreflang и рабочая локальная форма.
+- Польская сервисная страница получила обратный RU hreflang; RU home содержит service link и CTA; sitemap содержит 8 URL.
+- Preview того же URL остаётся `noindex,nofollow,noarchive`.
+- `003_publish_service_ru.sql` проверен на чистой временной БД и повторным idempotent запуском; он намеренно не входит в автоматический bootstrap.
+- Перед промоцией создан backup `domus-20260718T150703Z.sql.gz`. Restore в отдельную БД вернул `page=draft`, `version=draft`, `task=in_review`; временная БД после readback удалена.
+- Внешний deployment намеренно не выполнялся, `DEPLOYMENT_ENABLED=false`.
 
 ## Backup/restore drill
 

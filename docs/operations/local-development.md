@@ -11,6 +11,8 @@
 
 Первый старт применяет `001_content_schema.sql`, `001_mortgage_hub.sql` и content change `002_service_ru_review.sql`. Init scripts PostgreSQL выполняются только на пустом volume. Для существующей базы примените только нужный content change командой `pnpm db:prepare-service-ru-review`; `db:migrate` и `db:seed` рассчитаны на чистую БД.
 
+После отдельного Reviewer `Approved` локально опубликуйте подтверждённую русскую версию командой `pnpm db:publish-service-ru-local`. Команда не входит в автоматический bootstrap и не включает внешний deployment.
+
 Локальный PostgreSQL основан на официальном `16.14-alpine3.24`, закреплённом по digest. Минимальный производный image заменяет только startup-helper `gosu` на пакет Alpine `su-exec`; CI проверяет, что `gosu` отсутствует и сброс привилегий работает.
 
 После изменения Directus collections/fields/relations выполните `pnpm directus:snapshot`. Команда перезаписывает `apps/directus/snapshots/schema.yaml`; перед commit проверьте `schema apply --dry-run` и отсутствие незапланированного diff.

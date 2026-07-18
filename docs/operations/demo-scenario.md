@@ -5,8 +5,8 @@
 3. Откройте стабильный preview URL `/ru/ipoteka/konsultaciya`; подтвердите новый текст и `noindex`. В production страница должна отсутствовать.
 4. Если менялась схема/renderer, Builder создаёт branch и PR. Для content-only change PR содержит экспортируемый change manifest, не секреты/полный dump.
 5. Reviewer возвращает один статус. Только `Approved` разрешает merge/промоут версии.
-6. После merge и environment approval поменяйте статус страницы на `published`, разверните SHA/digest.
-7. Выполните live SEO, link, hreflang и smoke checks; запишите production URL/digest/version.
+6. После merge и Reviewer approval выполните `pnpm db:publish-service-ru-local`. Команда транзакционно публикует версию 3 только в локальном public-контуре; внешний deployment остаётся выключен.
+7. Выполните live SEO, link, hreflang и smoke checks; запишите local public URL, SHA, digest и version. Статус `deployed` используйте только после отдельного внешнего deployment.
 8. Демонстрация rollback: верните предыдущий image digest, а контент — новым revision из полного snapshot v2. Повторите readback.
 
 Локальный Directus содержит исходное состояние: `service-ru` draft видна в preview и исключена из production. Backup восстановлен в отдельную временную БД с readback `7 published + 1 draft`; временная БД после drill удалена. Реальная внешняя публикация не выполнялась.
