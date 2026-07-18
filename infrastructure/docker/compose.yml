@@ -1,7 +1,10 @@
 name: domus-presence
 services:
   database:
-    image: postgres:16-alpine
+    image: domus-postgres:16.14-alpine3.24-su-exec
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/postgres/Dockerfile
     restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -49,7 +52,10 @@ services:
       start_period: 30s
 
   directus-metadata:
-    image: postgres:16-alpine
+    image: domus-postgres:16.14-alpine3.24-su-exec
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/postgres/Dockerfile
     depends_on:
       directus: { condition: service_healthy }
     environment:
