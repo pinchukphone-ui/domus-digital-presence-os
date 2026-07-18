@@ -13,6 +13,8 @@
 
 Локальный PostgreSQL основан на официальном `16.14-alpine3.24`, закреплённом по digest. Минимальный производный image заменяет только startup-helper `gosu` на пакет Alpine `su-exec`; CI проверяет, что `gosu` отсутствует и сброс привилегий работает.
 
+После изменения Directus collections/fields/relations выполните `pnpm directus:snapshot`. Команда перезаписывает `apps/directus/snapshots/schema.yaml`; перед commit проверьте `schema apply --dry-run` и отсутствие незапланированного diff.
+
 ## Быстрый frontend без Docker
 
 ```bash

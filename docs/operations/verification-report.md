@@ -10,7 +10,7 @@
 - Та же draft-страница в public: redirect на 404.
 - `/sitemap.xml`: HTTP 200, 7 URL.
 - Browser E2E: 3/3 — published hub/links/SEO, React calculator, preview boundary.
-- Unit tests: 4/4; typecheck, lint, Astro build и content validation прошли.
+- Unit tests: 6/6; typecheck, lint, Astro build и content validation прошли.
 
 ## Backup/restore drill
 
@@ -34,6 +34,15 @@
 - Чистый bootstrap проверен на временном `tmpfs`: PostgreSQL стартовал от uid 70, запись/чтение прошли.
 - Docker Scout продолжает наследовать 1 critical + 16 high для удалённого `gosu` из SBOM базового слоя. Фактическое отсутствие бинарника проверяется во время CI build.
 - Перед заменой контейнера создан gzip SQL backup; восстановление отдельно проверено без изменения рабочего volume.
+
+## Directus read-only access and snapshot
+
+- Созданы idempotent `DOMUS Frontend` role, `DOMUS Frontend Read` policy и service user без пароля/Data Studio access.
+- Token имеет только read к `pages`, `content_blocks`, `internal_links`, `ctas`; write, `hubs` и `/schema/snapshot` возвращают HTTP 403.
+- Public и preview переведены с admin token на `DIRECTUS_FRONTEND_TOKEN`; REST readback и E2E прошли.
+- Schema snapshot Directus 12.1.1/PostgreSQL сохранён в Git, содержит девять content collections и не содержит credentials/user data.
+- `schema apply --dry-run` подтвердил `No changes to apply`; повторный metadata bootstrap сохранил ровно четыре read permissions.
+- Pre-change backup восстановлен в отдельную БД: 7 published + 1 draft, frontend service user отсутствует; временная БД удалена.
 
 ## Не подтверждено
 
