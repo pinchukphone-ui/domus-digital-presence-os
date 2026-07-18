@@ -35,3 +35,5 @@ Fixture не является production source и не разрешает пу�
 - public: `http://localhost:4321/pl/kredyty-hipoteczne`
 - preview: `http://localhost:4322/pl/kredyty-hipoteczne`
 - draft только preview: `http://localhost:4322/ru/ipoteka/konsultaciya`
+
+После изменения renderer roles, policies или tokens выполните `pnpm directus:apply-renderer-access`. Команда применяет metadata bootstrap, перезапускает Directus для сброса permission cache, пересоздаёт public/preview containers и проверяет: pages 200/200, public versions 403, preview versions 200, обе записи 403.

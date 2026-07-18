@@ -10,7 +10,7 @@
 - Та же страница в public: HTTP 200, published v3 и `index,follow`; текст v4 отсутствует.
 - `/sitemap.xml`: HTTP 200, 8 URL.
 - Browser E2E: 5/5 — published hub/links/SEO, React calculator, consultation demo и preview boundary.
-- Unit tests: 22/22; E2E: 5/5; typecheck, lint, Astro build и content validation прошли.
+- Unit tests: 23/23; E2E: 5/5; typecheck, lint, Astro build и content validation прошли.
 
 ## Russian consultation review candidate
 
@@ -59,9 +59,9 @@
 
 ## Directus read-only access and snapshot
 
-- Созданы idempotent `DOMUS Frontend` role, `DOMUS Frontend Read` policy и service user без пароля/Data Studio access.
-- Token имеет только read к `pages`, `content_blocks`, `internal_links`, `ctas`, `language_versions`; версии запрашивает только server-side preview. Write, `hubs` и `/schema/snapshot` возвращают HTTP 403.
-- Public и preview переведены с admin token на `DIRECTUS_FRONTEND_TOKEN`; REST readback и E2E прошли.
+- Созданы idempotent public/preview renderer roles, policies и service users без пароля/Data Studio access.
+- Public credential читает только published `pages`, связанные `content_blocks`, `internal_links`, `ctas`; preview credential дополнительно читает `language_versions`. Write, `hubs` и `/schema/snapshot` возвращают HTTP 403.
+- Public и preview используют независимые server-only credentials; REST readback и E2E прошли.
 - Schema snapshot Directus 12.1.1/PostgreSQL сохранён в Git, содержит девять content collections и не содержит credentials/user data.
 - `schema apply --dry-run` подтвердил `No changes to apply`; повторный metadata bootstrap сохранил ровно пять read permissions.
 
@@ -71,7 +71,15 @@
 - Public renderer не запрашивает `language_versions`: URL возвращает v3, `index,follow` и не содержит v4.
 - Preview выбирает только последнюю draft-версию новее последней published-версии: URL возвращает v4, banner `PREVIEW · v4` и `noindex,nofollow,noarchive`.
 - Старые draft rollback snapshots, включая v2, не могут перекрыть более новую published v3.
-- Frontend token: чтение `language_versions` HTTP 200, запись HTTP 403. Перед изменением создан backup `domus-20260718T154443Z.sql.gz`.
+- Preview token: чтение `language_versions` HTTP 200, запись HTTP 403. Перед изменением создан backup `domus-20260718T154443Z.sql.gz`.
+
+## Separate public and preview renderer credentials
+
+- Общий renderer token заменён двумя случайными локальными credentials, которые не входят в Git и принадлежат разным Directus service users/roles/policies.
+- Public policy: 4 read permissions без `language_versions` (HTTP 403); published-only rows фильтрует public adapter. Directus Core 12.1.1 вернул `RESOURCE_RESTRICTED` для custom item rules, это явно сохранённое ограничение до внешнего deployment.
+- Preview policy: 5 read permissions, включая `language_versions` HTTP 200. Запись обоими credentials, `hubs` и schema snapshot возвращают HTTP 403.
+- `pnpm directus:apply-renderer-access` идемпотентно применяет metadata, перезапускает Directus для сброса permission cache, пересоздаёт renderer-контейнеры без повторного metadata запуска и выполняет REST security gate.
+- Перед изменением создан и проверен backup `domus-20260718T162512Z.sql.gz`; public v3 / preview v4 boundary после ротации сохранена.
 - Pre-change backup восстановлен в отдельную БД: 7 published + 1 draft, frontend service user отсутствует; временная БД удалена.
 
 ## Не подтверждено

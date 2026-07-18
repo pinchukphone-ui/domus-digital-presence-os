@@ -4,6 +4,10 @@ import { describe, expect, it } from 'vitest';
 
 const snapshotPath = fileURLToPath(new URL('../../../apps/directus/snapshots/schema.yaml', import.meta.url));
 const metadataPath = fileURLToPath(new URL('../../../infrastructure/database/bootstrap/001_directus_metadata.sql', import.meta.url));
+const accessScriptPath = fileURLToPath(new URL('../../../infrastructure/database/apply-directus-renderer-access.sh', import.meta.url));
+const localComposePath = fileURLToPath(new URL('../../../infrastructure/docker/compose.yml', import.meta.url));
+const productionComposePath = fileURLToPath(new URL('../../../infrastructure/deployment/compose.production.yml', import.meta.url));
+const previewComposePath = fileURLToPath(new URL('../../../infrastructure/deployment/compose.preview.yml', import.meta.url));
 const expectedCollections = [
   'change_tasks',
   'content_blocks',
@@ -31,11 +35,30 @@ describe('Directus schema snapshot', () => {
     expect(snapshot).not.toMatch(/password|secret|frontend-service@|admin@example|change-me/i);
   });
 
-  it('grants the frontend policy only the five server-side read collections', () => {
+  it('separates public and preview version permissions', () => {
     const metadata = readFileSync(metadataPath, 'utf8');
-    const permissionValues = metadata.split('FROM (VALUES')[1]?.split(') AS frontend_collections')[0] ?? '';
-    const collections = [...permissionValues.matchAll(/\('([a-z_]+)'\)/g)].map((match) => match[1]);
+    const previewValues = metadata.split('FROM (VALUES')[1]?.split(') AS preview_collections')[0] ?? '';
+    const previewCollections = [...previewValues.matchAll(/\('([a-z_]+)'\)/g)].map((match) => match[1]);
 
-    expect(collections).toEqual(['pages', 'content_blocks', 'internal_links', 'ctas', 'language_versions']);
+    expect(metadata).toContain('DIRECTUS_PUBLIC_TOKEN');
+    expect(metadata).toContain('DIRECTUS_PREVIEW_TOKEN');
+    expect(metadata).toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'pages', 'read', NULL");
+    expect(metadata).not.toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'language_versions'");
+    expect(previewCollections).toEqual(['pages', 'content_blocks', 'internal_links', 'ctas', 'language_versions']);
+  });
+
+  it('wires distinct tokens and verifies access after clearing Directus permission cache', () => {
+    const localCompose = readFileSync(localComposePath, 'utf8');
+    const productionCompose = readFileSync(productionComposePath, 'utf8');
+    const previewCompose = readFileSync(previewComposePath, 'utf8');
+    const accessScript = readFileSync(accessScriptPath, 'utf8');
+
+    expect(localCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PUBLIC_TOKEN}');
+    expect(localCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}');
+    expect(productionCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PUBLIC_TOKEN}');
+    expect(previewCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}');
+    expect(accessScript).toContain('restart directus');
+    expect(accessScript).toContain('--no-deps public-web preview');
+    expect(accessScript).toContain('pages 200/200, public versions 403, preview versions 200, writes 403/403');
   });
 });
