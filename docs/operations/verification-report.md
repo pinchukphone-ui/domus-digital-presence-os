@@ -1,9 +1,9 @@
-# Verification report — 2026-07-17
+# Verification report — 2026-07-18
 
 ## Подтверждено
 
 - Docker 29.6.1, Compose 5.3.0.
-- `database`, `directus` 11.17.4, `public-web`, `preview`: healthy.
+- `database`, `directus` 12.1.1, `public-web`, `preview`: healthy.
 - Directus REST и PostgreSQL readback: `7 published`, `1 draft`.
 - Public `/pl/kredyty-hipoteczne`: HTTP 200, `index,follow`, self-canonical.
 - Preview `/ru/ipoteka/konsultaciya`: HTTP 200, preview banner, `noindex,nofollow,noarchive`.
@@ -19,7 +19,16 @@
 - Readback восстановленной БД: 7 published + 1 draft.
 - После проверки временная БД удалена; рабочий volume не изменялся.
 
+## Directus 12 upgrade
+
+- Перед обновлением создан и проверен gzip SQL backup; отдельно сохранён каталог uploads.
+- Миграция 11.17.4 → 12.1.1 сначала выполнена на изолированной копии базы.
+- Контейнер закреплён по версии и multi-platform digest; liveness переведён на `/server/ping` согласно Directus 12.
+- После обновления повторно проверены REST/БД readback, public/preview boundaries и E2E.
+- В image scan Directus 12.1.1 остаётся один high severity finding; его эксплуатационный путь требует влияния на системную сетевую конфигурацию контейнера. Это известный остаточный риск до исправленного upstream image.
+
 ## Не подтверждено
 
-- Внешние preview/production URL: отсутствуют host, домены, GitHub remote и deployment secrets.
+- Внешние preview/production URL намеренно не создавались: deployment отложен до готовности сайта.
 - Production rollback по GHCR digest: невозможен до первого внешнего deployment.
+- Применимость лицензии Directus 12 для будущего production должна быть подтверждена владельцем отдельно.

@@ -7,7 +7,7 @@
 2. `cp .env.example .env` и замените все `change-me` значения. Для secrets используйте `openssl rand -hex 32`.
 3. `pnpm install`.
 4. `docker compose -f infrastructure/docker/compose.yml --env-file .env up --build`.
-5. Проверьте `docker compose ... ps`, Directus `/server/health`, frontend `/healthz`.
+5. Проверьте `docker compose ... ps`, Directus `/server/ping`, frontend `/healthz`.
 
 Первый старт применяет `001_content_schema.sql` и `001_mortgage_hub.sql`. Init scripts PostgreSQL выполняются только на пустом volume. Для повторного применения используйте `DATABASE_URL` и команды `pnpm db:migrate`/`pnpm db:seed`; seed рассчитан на чистую БД.
 

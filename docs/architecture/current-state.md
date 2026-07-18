@@ -6,7 +6,7 @@
 
 | Область | Исходное состояние | Решение этапа 1 |
 | --- | --- | --- |
-| Стек | отсутствовал | TypeScript, Astro, React island, Directus 11.17.4, PostgreSQL 16 |
+| Стек | отсутствовал | TypeScript, Astro, React island, Directus 12.1.1, PostgreSQL 16 |
 | Package manager | отсутствовал | pnpm workspace 9.15.4 |
 | Структура | пустой каталог | модульный monorepo без микросервисов |
 | Инфраструктура | в момент первичного аудита Docker CLI отсутствовал | Docker Desktop 29.6.1 запущен; полный Compose проверен live |

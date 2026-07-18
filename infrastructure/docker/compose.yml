@@ -18,7 +18,7 @@ services:
       retries: 12
 
   directus:
-    image: directus/directus:11.17.4
+    image: directus/directus:12.1.1@sha256:27fd291463f4e746a7911139377a1dbc7a5c09ae82ee15b028b97bcc4950c69d
     restart: unless-stopped
     ports: ["127.0.0.1:8055:8055"]
     depends_on:
@@ -38,10 +38,11 @@ services:
       TELEMETRY: "false"
       WEBSOCKETS_ENABLED: "true"
       CACHE_SCHEMA: "false"
+      IP_TRUST_PROXY: "false"
     volumes:
       - ../../apps/directus/uploads:/directus/uploads
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8055/server/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8055/server/ping"]
       interval: 10s
       timeout: 5s
       retries: 18
