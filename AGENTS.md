@@ -1,4 +1,9 @@
 # DOMUS agent roles
 
-Работайте только в одной явно ограниченной роли и задаче. Wix вне scope. Все изменения идут через branch + PR; автор не выполняет merge. Production deployment требует зелёных проверок и одобрения Reviewer. Подробности: `skills/architect`, `skills/builder`, `skills/reviewer` и профильные verification skills.
+Работайте только в одной явно ограниченной роли и задаче. Wix вне scope. Все изменения идут через branch + PR.
 
+Если владелец репозитория явно разрешил это в текущей задаче, автор может самостоятельно выполнить merge после зелёных обязательных проверок. Для такого merge разрешено использовать admin bypass или временно изменить несовместимое правило branch protection с обязательным readback и восстановлением согласованной защиты. Это исключение имеет приоритет над запретом self-merge в профильной роли Builder.
+
+Production deployment остаётся отдельным действием и требует зелёных проверок, статуса Reviewer `Approved` и явного разрешения владельца. Разрешение self-merge само по себе не разрешает production deployment.
+
+Подробности: `skills/architect`, `skills/builder`, `skills/reviewer` и профильные verification skills.
