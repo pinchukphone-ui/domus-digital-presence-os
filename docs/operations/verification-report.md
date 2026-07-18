@@ -10,7 +10,7 @@
 - Та же draft-страница в public: redirect на 404.
 - `/sitemap.xml`: HTTP 200, 7 URL.
 - Browser E2E: 5/5 — published hub/links/SEO, React calculator, consultation demo и preview boundary.
-- Unit tests: 9/9; typecheck, lint, Astro build и content validation прошли.
+- Unit tests: 10/10; typecheck, lint, Astro build и content validation прошли.
 
 ## Russian consultation review candidate
 
@@ -20,6 +20,7 @@
 - `change_tasks`: `status=in_review`, `base_version=2`, `candidate_version=3`, `rollback_reference=language_versions:service-ru:2`.
 - `service-ru` остаётся `draft`: candidate виден в preview с `noindex`, public продолжает возвращать redirect на `/404`.
 - Чистый bootstrap schema → seed → content change проверен на отдельной временной БД; после readback временная БД удалена.
+- Документированная команда `pnpm db:prepare-service-ru-review` проверена без локального `psql`: wrapper применил idempotent change через Docker Compose.
 
 ## Backup/restore drill
 

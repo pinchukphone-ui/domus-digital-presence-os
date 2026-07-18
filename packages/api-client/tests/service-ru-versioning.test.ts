@@ -6,6 +6,8 @@ import { mortgageHubFixture } from '../src/fixture';
 const manifestPath = fileURLToPath(new URL('../../../docs/operations/change-manifests/service-ru-v3.json', import.meta.url));
 const migrationPath = fileURLToPath(new URL('../../../infrastructure/database/content-changes/002_service_ru_review.sql', import.meta.url));
 const composePath = fileURLToPath(new URL('../../../infrastructure/docker/compose.yml', import.meta.url));
+const wrapperPath = fileURLToPath(new URL('../../../infrastructure/database/apply-service-ru-review.sh', import.meta.url));
+const packagePath = fileURLToPath(new URL('../../../package.json', import.meta.url));
 
 describe('service-ru review candidate', () => {
   const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
@@ -19,6 +21,8 @@ describe('service-ru review candidate', () => {
   };
   const migration = readFileSync(migrationPath, 'utf8');
   const compose = readFileSync(composePath, 'utf8');
+  const wrapper = readFileSync(wrapperPath, 'utf8');
+  const packageJson = JSON.parse(readFileSync(packagePath, 'utf8')) as { scripts: Record<string, string> };
   const page = mortgageHubFixture.pages.find((candidate) => candidate.id === manifest.target_page_id);
   const blockChange = manifest.changes[0];
 
@@ -45,5 +49,13 @@ describe('service-ru review candidate', () => {
   it('applies the reviewed content change after the baseline seed on fresh volumes', () => {
     expect(compose).toContain('001_mortgage_hub.sql:/docker-entrypoint-initdb.d/20-mortgage-seed.sql:ro');
     expect(compose).toContain('002_service_ru_review.sql:/docker-entrypoint-initdb.d/30-service-ru-review.sql:ro');
+  });
+
+  it('supports both local psql and the documented Docker Compose fallback', () => {
+    expect(packageJson.scripts['db:prepare-service-ru-review']).toBe('bash infrastructure/database/apply-service-ru-review.sh');
+    expect(wrapper).toContain('command -v psql');
+    expect(wrapper).toContain('${DATABASE_URL:-}');
+    expect(wrapper).toContain('docker compose --env-file .env -f infrastructure/docker/compose.yml exec -T database');
+    expect(wrapper).toContain('002_service_ru_review.sql');
   });
 });
