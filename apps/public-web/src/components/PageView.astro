@@ -1,5 +1,6 @@
 ---
 import type { Page } from '@domus/content-model';
+import { ConsultationDemoForm } from './ConsultationDemoForm';
 import { MortgageCalculator } from './MortgageCalculator';
 const { page } = Astro.props as { page: Page };
 const isPolish = page.language === 'pl';
@@ -27,7 +28,7 @@ const calculatorId = isPolish ? 'kalkulator' : 'kalkulyator';
       {block.heading && (page.blocks.some((item) => item.kind === 'hero') ? <h2>{block.heading}</h2> : <h1>{block.heading}</h1>)}
       {block.body && <p>{block.body}</p>}
       {block.kind === 'calculator' && <MortgageCalculator language={page.language} client:load />}
-      {block.kind === 'service' && <form class="demo-form"><label>{page.language === 'pl' ? 'E-mail' : 'Эл. почта'}<input type="email" disabled placeholder="demo@example.com" /></label><button type="submit" disabled>{page.language === 'pl' ? 'Wersja demonstracyjna' : 'Демонстрационная версия'}</button></form>}
+      {block.kind === 'service' && <ConsultationDemoForm language={page.language} client:load />}
     </section>
   ))}
   {page.links.length > 0 && <section class="links"><h2>{isPolish ? 'Czytaj dalej' : 'Читайте дальше'}</h2><ul>{page.links.map((link) => <li><a href={link.href}>{link.label}<span aria-hidden="true">→</span></a></li>)}</ul></section>}

@@ -8,8 +8,8 @@ const origin = preview ? (process.env.PREVIEW_SITE_URL ?? 'http://localhost:4322
 const alternates = alternatePages(page, allPages);
 const isPolish = page.language === 'pl';
 const homePath = isPolish ? '/pl/kredyty-hipoteczne' : '/ru/ipoteka';
-const polishPath = alternates.find((item) => item.language === 'pl')?.path ?? '/pl/kredyty-hipoteczne';
-const russianPath = alternates.find((item) => item.language === 'ru')?.path ?? '/ru/ipoteka';
+const polishPath = isPolish ? page.canonicalPath : (alternates.find((item) => item.language === 'pl')?.path ?? '/pl/kredyty-hipoteczne');
+const russianPath = !isPolish ? page.canonicalPath : (alternates.find((item) => item.language === 'ru')?.path ?? '/ru/ipoteka');
 ---
 <!doctype html>
 <html lang={page.language}>
