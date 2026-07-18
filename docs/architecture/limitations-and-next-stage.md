@@ -5,7 +5,7 @@
 - Нет внешнего deployment host, доменов, TLS/SSO, GitHub remote и live URL.
 - Локальный контейнерный bootstrap выполнен и проверен; внешний production host всё ещё отсутствует.
 - Directus metadata (display templates, editor field layouts и granular public roles) не экспортированы; доступ frontend идёт через server-side admin bootstrap token. До production нужен read-only service account/policy.
-- Переход на Directus 12 отложен до отдельной проверки breaking changes и новых лицензионных условий; этап 1 закреплён на актуальной стабильной линии 11.x.
+- Directus обновлён до 12.1.1 после локальной проверки миграции. До production требуется отдельное подтверждение применимости Core tier/лицензии и повторная проверка актуальных условий.
 - Демонстрационная форма не отправляет и не сохраняет персональные данные.
 - Нет webhook, автоматически создающего PR из content-only change; ChangeTask связывает два процесса вручную.
 - Backup/restore проверен на отдельной временной БД; аварийный restore рабочей production-БД не выполнялся.
