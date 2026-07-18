@@ -28,12 +28,27 @@ jobs:
 
   preview:
     needs: image
-    if: vars.DEPLOY_HOST != ''
+    if: vars.DEPLOYMENT_ENABLED == 'true'
     runs-on: ubuntu-latest
     environment:
       name: preview
       url: ${{ vars.PREVIEW_URL }}
     steps:
+      - name: Validate preview configuration
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PATH: ${{ vars.DEPLOY_PATH }}
+          PREVIEW_URL: ${{ vars.PREVIEW_URL }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_PATH PREVIEW_URL DEPLOY_SSH_KEY DEPLOY_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "Missing preview environment value: $name" >&2
+              exit 1
+            fi
+          done
       - name: Configure SSH
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
