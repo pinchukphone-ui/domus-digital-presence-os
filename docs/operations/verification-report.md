@@ -9,8 +9,18 @@
 - Preview `/ru/ipoteka/konsultaciya`: HTTP 200, preview banner, `noindex,nofollow,noarchive`.
 - Та же draft-страница в public: redirect на 404.
 - `/sitemap.xml`: HTTP 200, 7 URL.
-- Browser E2E: 3/3 — published hub/links/SEO, React calculator, preview boundary.
-- Unit tests: 6/6; typecheck, lint, Astro build и content validation прошли.
+- Browser E2E: 5/5 — published hub/links/SEO, React calculator, consultation demo и preview boundary.
+- Unit tests: 10/10; typecheck, lint, Astro build и content validation прошли.
+
+## Russian consultation review candidate
+
+- Исходная неполная версия 1 сохранена без изменений.
+- Полная версия 2 содержит rollback snapshot страницы и блоков; транзакционный rollback test восстановил исходный текст.
+- Полная версия 3 содержит candidate-текст и совпадает с fixture; повторное применение content change не создаёт дубликаты.
+- `change_tasks`: `status=in_review`, `base_version=2`, `candidate_version=3`, `rollback_reference=language_versions:service-ru:2`.
+- `service-ru` остаётся `draft`: candidate виден в preview с `noindex`, public продолжает возвращать redirect на `/404`.
+- Чистый bootstrap schema → seed → content change проверен на отдельной временной БД; после readback временная БД удалена.
+- Документированная команда `pnpm db:prepare-service-ru-review` проверена без локального `psql`: wrapper применил idempotent change через Docker Compose.
 
 ## Backup/restore drill
 
