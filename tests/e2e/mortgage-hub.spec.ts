@@ -21,10 +21,28 @@ test('renders the complete published hub with SEO metadata and valid links', asy
 
 test('calculator is an interactive React island', async ({ page }) => {
   await page.goto('http://127.0.0.1:4321/pl/kredyty-hipoteczne');
+  await expect(page.getByRole('link', { name: 'Oblicz ratę' })).toHaveAttribute('href', '#kalkulator');
+  await expect(page.locator('#kalkulator')).toBeVisible();
   const result = page.locator('[data-testid="mortgage-calculator"] output strong');
   const before = await result.textContent();
   await page.getByLabel('Kwota kredytu (PLN)').fill('700000');
   await expect(result).not.toHaveText(before ?? '');
+  await expect(result).toContainText('PLN / mies.');
+});
+
+test('exposes an accessible localized conversion path', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4321/pl/kredyty-hipoteczne');
+  await expect(page.getByRole('link', { name: 'Polski' })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('link', { name: 'Przejdź do treści' })).toHaveAttribute('href', '#content');
+  await expect(page.locator('.breadcrumbs')).toHaveCount(0);
+
+  await page.goto('http://127.0.0.1:4321/ru/ipoteka');
+  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('link', { name: 'Рассчитать платёж' })).toHaveAttribute('href', '#kalkulyator');
+
+  await page.goto('http://127.0.0.1:4321/pl/kredyty-hipoteczne/proces');
+  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', '/ru/ipoteka/process');
+  await expect(page.locator('.breadcrumbs [aria-current="page"]')).toHaveCount(1);
 });
 
 test('preview exposes draft with noindex while production does not', async ({ page, request }) => {
