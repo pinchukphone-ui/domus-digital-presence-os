@@ -10,3 +10,7 @@
 8. Демонстрация rollback: верните предыдущий image digest, а контент — новым revision из полного snapshot v2. Повторите readback.
 
 Локальный Directus содержит исходное состояние: `service-ru` draft видна в preview и исключена из production. Backup восстановлен в отдельную временную БД с readback `7 published + 1 draft`; временная БД после drill удалена. Реальная внешняя публикация не выполнялась.
+
+## Следующий черновик после локальной публикации
+
+После публикации v3 выполните `pnpm db:prepare-service-ru-preview-v4`. Команда добавляет только immutable snapshot v4 и отдельный `ChangeTask`; `pages` и `content_blocks` остаются на published v3. Public URL продолжает показывать v3 и не запрашивает `language_versions`, а тот же путь на preview URL показывает v4, banner `PREVIEW · v4` и `noindex`. Сверьте границу с `change-manifests/service-ru-preview-v4.json`. Публикация v4 и внешний deployment требуют отдельных задач.
