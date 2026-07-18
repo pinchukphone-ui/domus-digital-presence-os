@@ -50,5 +50,6 @@ export async function getMortgageHub(options: { includeDrafts?: boolean } = {}):
 function buildBreadcrumbs(item: DbPage, all: DbPage[]) {
   const home = all.find((candidate) => candidate.language === item.language && candidate.page_type === 'hub');
   if (!home || home.id === item.id) return [{ label: item.title, href: item.canonical_path }];
-  return [{ label: home.title, href: home.canonical_path }, { label: item.title, href: item.canonical_path }];
+  const homeLabel = item.language === 'pl' ? 'Kredyty hipoteczne' : 'Ипотека';
+  return [{ label: homeLabel, href: home.canonical_path }, { label: item.title, href: item.canonical_path }];
 }

@@ -45,11 +45,26 @@ test('exposes an accessible localized conversion path', async ({ page }) => {
   await expect(page.locator('.breadcrumbs [aria-current="page"]')).toHaveCount(1);
 });
 
+test('consultation demo validates locally without sending data', async ({ page }) => {
+  await page.goto('http://127.0.0.1:4321/pl/kredyty-hipoteczne/konsultacja');
+  const form = page.getByTestId('consultation-demo-form');
+  await form.getByLabel('E-mail').fill('client@example.com');
+  await form.getByRole('button', { name: 'Sprawdź formularz' }).click();
+  await expect(form.getByRole('status')).toHaveText('Formularz działa. Dane nie zostały wysłane.');
+  await expect(page).toHaveURL(/\/pl\/kredyty-hipoteczne\/konsultacja$/);
+});
+
 test('preview exposes draft with noindex while production does not', async ({ page, request }) => {
   const draft = '/ru/ipoteka/konsultaciya';
   await page.goto(`http://127.0.0.1:4322${draft}`);
   await expect(page.locator('.preview-banner')).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow,noarchive');
+  await expect(page.getByRole('navigation', { name: 'Навигационная цепочка' }).getByRole('link', { name: 'Ипотека' })).toHaveAttribute('href', '/ru/ipoteka');
+  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', draft);
+  const form = page.getByTestId('consultation-demo-form');
+  await form.getByLabel('Эл. почта').fill('client@example.com');
+  await form.getByRole('button', { name: 'Проверить форму' }).click();
+  await expect(form.getByRole('status')).toHaveText('Форма работает. Данные не были отправлены.');
   const production = await request.get(`http://127.0.0.1:4321${draft}`, { maxRedirects: 0 });
   expect(production.status()).toBe(302);
 });
