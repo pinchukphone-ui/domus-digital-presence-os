@@ -16,6 +16,7 @@
     "validate:content": "tsx packages/testing/src/validate-content.ts",
     "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/migrations/001_content_schema.sql",
     "db:seed": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/seeds/001_mortgage_hub.sql",
+    "db:prepare-service-ru-review": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/content-changes/002_service_ru_review.sql",
     "backup": "bash infrastructure/database/backup.sh",
     "restore": "bash infrastructure/database/restore.sh",
     "directus:snapshot": "docker compose --env-file .env -f infrastructure/docker/compose.yml run --rm directus /bin/sh -c 'node cli.js schema snapshot --yes /directus/snapshots/schema.yaml'"

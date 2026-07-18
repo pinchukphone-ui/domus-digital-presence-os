@@ -9,7 +9,7 @@
 4. `docker compose -f infrastructure/docker/compose.yml --env-file .env up --build`.
 5. Проверьте `docker compose ... ps`, Directus `/server/ping`, frontend `/healthz`.
 
-Первый старт применяет `001_content_schema.sql` и `001_mortgage_hub.sql`. Init scripts PostgreSQL выполняются только на пустом volume. Для повторного применения используйте `DATABASE_URL` и команды `pnpm db:migrate`/`pnpm db:seed`; seed рассчитан на чистую БД.
+Первый старт применяет `001_content_schema.sql`, `001_mortgage_hub.sql` и content change `002_service_ru_review.sql`. Init scripts PostgreSQL выполняются только на пустом volume. Для существующей базы примените только нужный content change командой `pnpm db:prepare-service-ru-review`; `db:migrate` и `db:seed` рассчитаны на чистую БД.
 
 Локальный PostgreSQL основан на официальном `16.14-alpine3.24`, закреплённом по digest. Минимальный производный image заменяет только startup-helper `gosu` на пакет Alpine `su-exec`; CI проверяет, что `gosu` отсутствует и сброс привилегий работает.
 

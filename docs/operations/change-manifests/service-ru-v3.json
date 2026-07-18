@@ -1,0 +1,21 @@
+{
+  "change_task": "Publish Russian mortgage consultation",
+  "target_page_id": "service-ru",
+  "translation_group": "44444444-4444-4444-8444-444444444444",
+  "language": "ru",
+  "page_status": "draft",
+  "workflow_status": "in_review",
+  "base_version": 2,
+  "candidate_version": 3,
+  "preview_url": "/ru/ipoteka/konsultaciya",
+  "rollback_reference": "language_versions:service-ru:2",
+  "changes": [
+    {
+      "collection": "content_blocks",
+      "id": "service-body-ru",
+      "field": "body",
+      "from": "Демонстрационная форма не отправляет данные. Интеграция требует отдельной задачи и политики конфиденциальности.",
+      "to": "Демонстрационная форма не отправляет данные. Рабочая интеграция требует отдельной задачи, согласий и политики конфиденциальности."
+    }
+  ]
+}
