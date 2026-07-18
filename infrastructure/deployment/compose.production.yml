@@ -6,7 +6,7 @@ services:
     environment:
       CONTENT_SOURCE: directus
       DIRECTUS_INTERNAL_URL: ${DIRECTUS_INTERNAL_URL}
-      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       PREVIEW_MODE: "false"
     ports: ["127.0.0.1:4321:4321"]
@@ -15,4 +15,3 @@ services:
       interval: 10s
       timeout: 5s
       retries: 12
-

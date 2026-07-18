@@ -30,7 +30,7 @@ services:
       SECRET: ${DIRECTUS_SECRET}
       ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL}
       ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD}
-      ADMIN_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      ADMIN_TOKEN: ${DIRECTUS_ADMIN_TOKEN}
       DB_CLIENT: pg
       DB_HOST: database
       DB_PORT: 5432
@@ -44,6 +44,7 @@ services:
       IP_TRUST_PROXY: "false"
     volumes:
       - ../../apps/directus/uploads:/directus/uploads
+      - ../../apps/directus/snapshots:/directus/snapshots
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://127.0.0.1:8055/server/ping"]
       interval: 10s
@@ -60,6 +61,7 @@ services:
       directus: { condition: service_healthy }
     environment:
       PGPASSWORD: ${POSTGRES_PASSWORD}
+      DIRECTUS_FRONTEND_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
     volumes:
       - ../database/bootstrap:/bootstrap:ro
     command: ["psql", "-h", "database", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}", "-v", "ON_ERROR_STOP=1", "-f", "/bootstrap/001_directus_metadata.sql"]
@@ -73,7 +75,7 @@ services:
     environment:
       CONTENT_SOURCE: directus
       DIRECTUS_INTERNAL_URL: http://directus:8055
-      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
       PUBLIC_SITE_URL: ${PUBLIC_SITE_URL}
       PREVIEW_MODE: "false"
     healthcheck:
@@ -91,7 +93,7 @@ services:
     environment:
       CONTENT_SOURCE: directus
       DIRECTUS_INTERNAL_URL: http://directus:8055
-      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_FRONTEND_TOKEN}
       PREVIEW_SITE_URL: ${PREVIEW_SITE_URL}
       PREVIEW_MODE: "true"
     healthcheck:

@@ -1,0 +1,289 @@
+version: 1
+directus: 12.1.1
+vendor: postgres
+collections:
+  - collection: change_tasks
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: change_tasks
+      color: null
+      display_template: '{{title}}'
+      group: null
+      hidden: false
+      icon: task_alt
+      item_duplication_fields: null
+      note: Auditable content and deployment changes
+      preview_url: null
+      singleton: false
+      sort: 9
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: change_tasks
+  - collection: content_blocks
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: content_blocks
+      color: null
+      display_template: '{{heading}}'
+      group: null
+      hidden: false
+      icon: view_agenda
+      item_duplication_fields: null
+      note: Ordered page content blocks
+      preview_url: null
+      singleton: false
+      sort: 3
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: content_blocks
+  - collection: ctas
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: ctas
+      color: null
+      display_template: '{{label}}'
+      group: null
+      hidden: false
+      icon: ads_click
+      item_duplication_fields: null
+      note: Localized calls to action
+      preview_url: null
+      singleton: false
+      sort: 6
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: ctas
+  - collection: hubs
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: status
+      archive_value: archived
+      autosave_revision_interval: null
+      collapse: open
+      collection: hubs
+      color: null
+      display_template: '{{name}}'
+      group: null
+      hidden: false
+      icon: hub
+      item_duplication_fields: null
+      note: Multilingual content hubs
+      preview_url: null
+      singleton: false
+      sort: 1
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: draft
+      versioning: false
+    schema:
+      name: hubs
+  - collection: internal_links
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: internal_links
+      color: null
+      display_template: '{{label}}'
+      group: null
+      hidden: false
+      icon: link
+      item_duplication_fields: null
+      note: Explicit internal-link graph
+      preview_url: null
+      singleton: false
+      sort: 7
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: internal_links
+  - collection: language_versions
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: status
+      archive_value: archived
+      autosave_revision_interval: null
+      collapse: open
+      collection: language_versions
+      color: null
+      display_template: '{{page_id}} v{{version}}'
+      group: null
+      hidden: false
+      icon: history
+      item_duplication_fields: null
+      note: Immutable page-version snapshots
+      preview_url: null
+      singleton: false
+      sort: 4
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: draft
+      versioning: false
+    schema:
+      name: language_versions
+  - collection: media_assets
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: media_assets
+      color: null
+      display_template: '{{id}}'
+      group: null
+      hidden: false
+      icon: perm_media
+      item_duplication_fields: null
+      note: Media metadata and rights source
+      preview_url: null
+      singleton: false
+      sort: 8
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: media_assets
+  - collection: pages
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: status
+      archive_value: archived
+      autosave_revision_interval: null
+      collapse: open
+      collection: pages
+      color: null
+      display_template: '{{title}}'
+      group: null
+      hidden: false
+      icon: article
+      item_duplication_fields: null
+      note: One record per language; paired by translation_group
+      preview_url: null
+      singleton: false
+      sort: 2
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: draft
+      versioning: false
+    schema:
+      name: pages
+  - collection: services
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: services
+      color: null
+      display_template: '{{name}}'
+      group: null
+      hidden: false
+      icon: support_agent
+      item_duplication_fields: null
+      note: Localized DOMUS services
+      preview_url: null
+      singleton: false
+      sort: 5
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: services
+fields: []
+systemFields:
+  - collection: directus_activity
+    field: timestamp
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_clients
+    field: date_created
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_codes
+    field: expires_at
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_codes
+    field: used_at
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_consents
+    field: client
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_tokens
+    field: code_hash
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_tokens
+    field: expires_at
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_tokens
+    field: previous_session
+    schema:
+      is_indexed: true
+  - collection: directus_oauth_tokens
+    field: session
+    schema:
+      is_indexed: true
+  - collection: directus_revisions
+    field: activity
+    schema:
+      is_indexed: true
+  - collection: directus_revisions
+    field: parent
+    schema:
+      is_indexed: true
+  - collection: directus_sessions
+    field: oauth_client
+    schema:
+      is_indexed: true
+relations: []

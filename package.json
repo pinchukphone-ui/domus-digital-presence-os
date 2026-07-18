@@ -17,7 +17,8 @@
     "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/migrations/001_content_schema.sql",
     "db:seed": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/seeds/001_mortgage_hub.sql",
     "backup": "bash infrastructure/database/backup.sh",
-    "restore": "bash infrastructure/database/restore.sh"
+    "restore": "bash infrastructure/database/restore.sh",
+    "directus:snapshot": "docker compose --env-file .env -f infrastructure/docker/compose.yml run --rm directus /bin/sh -c 'node cli.js schema snapshot --yes /directus/snapshots/schema.yaml'"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",

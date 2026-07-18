@@ -1,3 +1,10 @@
+\getenv frontend_token DIRECTUS_FRONTEND_TOKEN
+\if :{?frontend_token}
+\else
+  \echo 'DIRECTUS_FRONTEND_TOKEN is required'
+  \quit 3
+\endif
+
 BEGIN;
 
 INSERT INTO directus_collections
@@ -20,5 +27,89 @@ ON CONFLICT (collection) DO UPDATE SET
   archive_value = EXCLUDED.archive_value,
   unarchive_value = EXCLUDED.unarchive_value,
   sort = EXCLUDED.sort;
+
+INSERT INTO directus_roles (id, name, icon, description)
+VALUES (
+  '31ff6ef4-7e93-445a-9d7e-2f3e160c257e',
+  'DOMUS Frontend',
+  'language',
+  'Server-side public and preview rendering; no Data Studio access'
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  icon = EXCLUDED.icon,
+  description = EXCLUDED.description;
+
+INSERT INTO directus_policies
+  (id, name, icon, description, enforce_tfa, admin_access, app_access)
+VALUES (
+  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
+  'DOMUS Frontend Read',
+  'visibility',
+  'Read-only access to collections required by Astro rendering',
+  false,
+  false,
+  false
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  icon = EXCLUDED.icon,
+  description = EXCLUDED.description,
+  enforce_tfa = false,
+  admin_access = false,
+  app_access = false;
+
+INSERT INTO directus_access (id, role, policy, sort)
+VALUES (
+  '619cc573-b8c4-4f87-9e6b-08acbb625e8a',
+  '31ff6ef4-7e93-445a-9d7e-2f3e160c257e',
+  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
+  1
+)
+ON CONFLICT (id) DO UPDATE SET
+  role = EXCLUDED.role,
+  policy = EXCLUDED.policy,
+  sort = EXCLUDED.sort;
+
+INSERT INTO directus_users
+  (id, first_name, last_name, email, status, role, token, provider, email_notifications, text_direction)
+VALUES (
+  '261d41fb-af8c-4596-8758-fc1cf52e061e',
+  'DOMUS',
+  'Frontend',
+  'frontend-service@domus.local',
+  'active',
+  '31ff6ef4-7e93-445a-9d7e-2f3e160c257e',
+  :'frontend_token',
+  'default',
+  false,
+  'auto'
+)
+ON CONFLICT (email) DO UPDATE SET
+  first_name = EXCLUDED.first_name,
+  last_name = EXCLUDED.last_name,
+  status = 'active',
+  role = EXCLUDED.role,
+  token = EXCLUDED.token,
+  email_notifications = false;
+
+DELETE FROM directus_permissions
+WHERE policy = 'abfd2755-dd92-43cb-b016-3fabd5d49cd0';
+
+INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
+SELECT
+  'abfd2755-dd92-43cb-b016-3fabd5d49cd0',
+  collection,
+  'read',
+  NULL,
+  NULL,
+  NULL,
+  '*'
+FROM (VALUES
+  ('pages'),
+  ('content_blocks'),
+  ('internal_links'),
+  ('ctas')
+) AS frontend_collections(collection);
 
 COMMIT;

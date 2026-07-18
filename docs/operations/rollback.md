@@ -25,3 +25,7 @@ BACKUP_FILE=infrastructure/docker/backups/domus-YYYYmmddTHHMMSS.sql.gz pnpm rest
 Не запускайте старый Directus поверх базы, уже мигрированной новой major-версией. Для rollback сначала остановите Directus и любые пишущие процессы, восстановите pre-upgrade SQL backup и uploads, затем верните image из предыдущего подтверждённого Git revision.
 
 Перед восстановлением рабочей базы обязательно повторите процедуру на отдельной `RESTORE_DATABASE` и проверьте её предыдущей версией Directus: `/server/ping`, REST counts и прикладные страницы. После рабочего rollback повторите public/preview E2E. В тренировке обновления 12.1.1 backup Directus 11.17.4 был восстановлен в отдельную БД и дал `7 published` + `1 draft`.
+
+## Directus access
+
+При ошибке read-only bootstrap верните предыдущий подтверждённый SQL backup и `.env`, пересоздайте `directus`, `directus-metadata`, `public-web` и `preview`. Не подставляйте admin token во frontend как постоянный обход. Перед завершением rollback проверьте frontend read HTTP 200, write HTTP 403, запрет `/schema/snapshot`, public/preview boundaries и E2E.
