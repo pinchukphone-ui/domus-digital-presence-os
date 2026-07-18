@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HubSchema } from '../src/index';
+import { HubSchema, LanguageVersionSnapshotSchema } from '../src/index';
 import { mortgageHubFixture } from '../../api-client/src/fixture';
 
 describe('content schema', () => {
@@ -15,5 +15,28 @@ describe('content schema', () => {
     for (const group of groups.values()) {
       expect(group.map((page) => page.language).sort()).toEqual(['pl', 'ru']);
     }
+  });
+
+  it('requires a complete immutable language-version snapshot', () => {
+    const page = HubSchema.parse(mortgageHubFixture).pages[0]!;
+    const snapshot = LanguageVersionSnapshotSchema.parse({
+      schema_version: 1,
+      page: {
+        id: page.id,
+        hub_id: page.hubId,
+        translation_group: page.translationGroup,
+        language: page.language,
+        slug: page.slug,
+        canonical_path: page.canonicalPath,
+        page_type: page.pageType,
+        status: page.status,
+        title: page.title,
+        meta_description: page.metaDescription
+      },
+      blocks: page.blocks
+    });
+
+    expect(snapshot.page.id).toBe(page.id);
+    expect(snapshot.blocks).toHaveLength(page.blocks.length);
   });
 });

@@ -25,7 +25,7 @@ const russianPath = !isPolish ? page.canonicalPath : (alternates.find((item) => 
   </head>
   <body>
     <a class="skip-link" href="#content">{isPolish ? 'Przejdź do treści' : 'Перейти к содержанию'}</a>
-    {preview && <div class="preview-banner" role="status">PREVIEW · draft content · noindex</div>}
+    {preview && <div class="preview-banner" role="status">PREVIEW{page.previewCandidate && page.contentVersion ? ` · v${page.contentVersion}` : ''} · draft content · noindex</div>}
     <header class="site-header">
       <a class="brand" href={homePath} aria-label={isPolish ? 'DOMUS Global — strona główna' : 'DOMUS Global — главная'}>DOMUS <span>GLOBAL</span></a>
       <nav aria-label={isPolish ? 'Wybór języka' : 'Выбор языка'}>

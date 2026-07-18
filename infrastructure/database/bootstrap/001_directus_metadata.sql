@@ -109,7 +109,8 @@ FROM (VALUES
   ('pages'),
   ('content_blocks'),
   ('internal_links'),
-  ('ctas')
+  ('ctas'),
+  ('language_versions')
 ) AS frontend_collections(collection);
 
 COMMIT;

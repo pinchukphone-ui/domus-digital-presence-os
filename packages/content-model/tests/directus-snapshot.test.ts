@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const snapshotPath = fileURLToPath(new URL('../../../apps/directus/snapshots/schema.yaml', import.meta.url));
+const metadataPath = fileURLToPath(new URL('../../../infrastructure/database/bootstrap/001_directus_metadata.sql', import.meta.url));
 const expectedCollections = [
   'change_tasks',
   'content_blocks',
@@ -28,5 +29,13 @@ describe('Directus schema snapshot', () => {
 
   it('does not contain credentials or service-user data', () => {
     expect(snapshot).not.toMatch(/password|secret|frontend-service@|admin@example|change-me/i);
+  });
+
+  it('grants the frontend policy only the five server-side read collections', () => {
+    const metadata = readFileSync(metadataPath, 'utf8');
+    const permissionValues = metadata.split('FROM (VALUES')[1]?.split(') AS frontend_collections')[0] ?? '';
+    const collections = [...permissionValues.matchAll(/\('([a-z_]+)'\)/g)].map((match) => match[1]);
+
+    expect(collections).toEqual(['pages', 'content_blocks', 'internal_links', 'ctas', 'language_versions']);
   });
 });

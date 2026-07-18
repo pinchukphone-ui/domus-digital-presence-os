@@ -4,13 +4,13 @@
 
 - Docker 29.6.1, Compose 5.3.0.
 - `database`, `directus` 12.1.1, `public-web`, `preview`: healthy.
-- Directus REST и PostgreSQL readback: `7 published`, `1 draft`.
+- Directus REST и PostgreSQL readback: `8` published page rows; отдельный version snapshot v4 остаётся `draft`.
 - Public `/pl/kredyty-hipoteczne`: HTTP 200, `index,follow`, self-canonical.
-- Preview `/ru/ipoteka/konsultaciya`: HTTP 200, preview banner, `noindex,nofollow,noarchive`.
-- Та же draft-страница в public: redirect на 404.
-- `/sitemap.xml`: HTTP 200, 7 URL.
+- Preview `/ru/ipoteka/konsultaciya`: HTTP 200, version-aware banner `PREVIEW · v4`, `noindex,nofollow,noarchive`.
+- Та же страница в public: HTTP 200, published v3 и `index,follow`; текст v4 отсутствует.
+- `/sitemap.xml`: HTTP 200, 8 URL.
 - Browser E2E: 5/5 — published hub/links/SEO, React calculator, consultation demo и preview boundary.
-- Unit tests: 13/13; typecheck, lint, Astro build и content validation прошли.
+- Unit tests: 22/22; E2E: 5/5; typecheck, lint, Astro build и content validation прошли.
 
 ## Russian consultation review candidate
 
@@ -60,10 +60,18 @@
 ## Directus read-only access and snapshot
 
 - Созданы idempotent `DOMUS Frontend` role, `DOMUS Frontend Read` policy и service user без пароля/Data Studio access.
-- Token имеет только read к `pages`, `content_blocks`, `internal_links`, `ctas`; write, `hubs` и `/schema/snapshot` возвращают HTTP 403.
+- Token имеет только read к `pages`, `content_blocks`, `internal_links`, `ctas`, `language_versions`; версии запрашивает только server-side preview. Write, `hubs` и `/schema/snapshot` возвращают HTTP 403.
 - Public и preview переведены с admin token на `DIRECTUS_FRONTEND_TOKEN`; REST readback и E2E прошли.
 - Schema snapshot Directus 12.1.1/PostgreSQL сохранён в Git, содержит девять content collections и не содержит credentials/user data.
-- `schema apply --dry-run` подтвердил `No changes to apply`; повторный metadata bootstrap сохранил ровно четыре read permissions.
+- `schema apply --dry-run` подтвердил `No changes to apply`; повторный metadata bootstrap сохранил ровно пять read permissions.
+
+## Version-aware preview after local publication
+
+- Public consultation остаётся на published v3; новый immutable v4 имеет статус `draft`, отдельный `ChangeTask` — `in_review`, rollback reference — `language_versions:service-ru:3`.
+- Public renderer не запрашивает `language_versions`: URL возвращает v3, `index,follow` и не содержит v4.
+- Preview выбирает только последнюю draft-версию новее последней published-версии: URL возвращает v4, banner `PREVIEW · v4` и `noindex,nofollow,noarchive`.
+- Старые draft rollback snapshots, включая v2, не могут перекрыть более новую published v3.
+- Frontend token: чтение `language_versions` HTTP 200, запись HTTP 403. Перед изменением создан backup `domus-20260718T154443Z.sql.gz`.
 - Pre-change backup восстановлен в отдельную БД: 7 published + 1 draft, frontend service user отсутствует; временная БД удалена.
 
 ## Не подтверждено

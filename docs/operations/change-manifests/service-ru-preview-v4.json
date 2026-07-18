@@ -1,0 +1,19 @@
+{
+  "target_page_id": "service-ru",
+  "public_version": 3,
+  "candidate_version": 4,
+  "candidate_status": "draft",
+  "workflow_status": "in_review",
+  "preview_url": "http://localhost:4322/ru/ipoteka/konsultaciya",
+  "public_url": "http://localhost:4321/ru/ipoteka/konsultaciya",
+  "rollback_reference": "language_versions:service-ru:3",
+  "external_deployment": false,
+  "changes": [
+    {
+      "id": "service-body-ru",
+      "field": "body",
+      "from": "Демонстрационная форма не отправляет данные. Рабочая интеграция требует отдельной задачи, согласий и политики конфиденциальности.",
+      "to": "Черновик версии 4: демонстрационная форма не отправляет данные. Перед публикацией требуется отдельная проверка текста, согласий и политики конфиденциальности."
+    }
+  ]
+}
