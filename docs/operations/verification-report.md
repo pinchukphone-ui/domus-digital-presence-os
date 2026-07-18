@@ -82,6 +82,12 @@
 - Перед изменением создан и проверен backup `domus-20260718T162512Z.sql.gz`; public v3 / preview v4 boundary после ротации сохранена.
 - Pre-change backup восстановлен в отдельную БД: 7 published + 1 draft, frontend service user отсутствует; временная БД удалена.
 
+## Preview sitemap boundary
+
+- Build-time `@astrojs/sitemap` удалён из общего public/preview image; публичный sitemap продолжает формироваться runtime-маршрутом `/sitemap.xml` только из published-страниц.
+- Preview `/sitemap.xml` возвращает HTTP 404, а отсутствующие `/sitemap-index.xml` и `/sitemap-0.xml` направляются на `/404`; draft URL не экспортируется.
+- Regression E2E: 6/6. Локальный Docker readback подтвердил public sitemap HTTP 200, preview sitemap HTTP 404 и draft-страницу HTTP 200 с `noindex,nofollow,noarchive`.
+
 ## Не подтверждено
 
 - Внешние preview/production URL намеренно не создавались: deployment отложен до готовности сайта.

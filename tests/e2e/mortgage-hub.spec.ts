@@ -68,3 +68,22 @@ test('preview exposes draft with noindex while production does not', async ({ pa
   const production = await request.get(`http://127.0.0.1:4321${draft}`, { maxRedirects: 0 });
   expect(production.status()).toBe(302);
 });
+
+test('publishes one runtime sitemap and exposes no generated sitemap files in preview', async ({ request }) => {
+  const publicSitemap = await request.get('http://127.0.0.1:4321/sitemap.xml');
+  expect(publicSitemap.status()).toBe(200);
+  expect(publicSitemap.headers()['content-type']).toContain('application/xml');
+
+  const publicBody = await publicSitemap.text();
+  for (const route of productionRoutes) expect(publicBody).toContain(`http://127.0.0.1:4321${route}`);
+  expect(publicBody).not.toContain('/ru/ipoteka/konsultaciya');
+
+  const previewSitemap = await request.get('http://127.0.0.1:4322/sitemap.xml');
+  expect(previewSitemap.status()).toBe(404);
+
+  for (const path of ['/sitemap-index.xml', '/sitemap-0.xml']) {
+    const previewResponse = await request.get(`http://127.0.0.1:4322${path}`, { maxRedirects: 0 });
+    expect(previewResponse.status(), path).toBe(302);
+    expect(previewResponse.headers().location, path).toBe('/404');
+  }
+});
