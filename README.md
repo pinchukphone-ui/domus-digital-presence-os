@@ -4,7 +4,8 @@
 
 ## Быстрый запуск
 
-Требуются Node.js 22+, pnpm 9 и Docker Desktop.
+Требуются Node.js 22.12+, pnpm 9 и Docker Desktop. Рекомендуемая версия Node
+зафиксирована в `.nvmrc`.
 
 ```bash
 cp .env.example .env
@@ -26,4 +27,3 @@ pnpm validate
 ```
 
 Операционные инструкции: [локальный запуск](docs/operations/local-development.md), [deployment](docs/operations/deployment.md), [rollback](docs/operations/rollback.md).
-

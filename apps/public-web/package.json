@@ -10,18 +10,18 @@
     "typecheck": "astro check"
   },
   "dependencies": {
-    "@astrojs/node": "^9.3.0",
-    "@astrojs/react": "^4.3.0",
-    "@astrojs/sitemap": "^3.4.1",
+    "@astrojs/node": "^10.0.5",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.6.0",
     "@domus/api-client": "workspace:*",
     "@domus/content-model": "workspace:*",
     "@domus/design-system": "workspace:*",
     "@domus/seo": "workspace:*",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "astro": "^5.12.0",
+    "astro": "^6.4.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
-  "devDependencies": { "@astrojs/check": "^0.9.4", "typescript": "^5.8.3" }
+  "devDependencies": { "@astrojs/check": "^0.9.6", "typescript": "^5.8.3" }
 }
