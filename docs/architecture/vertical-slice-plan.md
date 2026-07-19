@@ -21,8 +21,8 @@ flowchart LR
 
 1. Directus и PostgreSQL — единственный источник контента; fixture используется только для тестов и автономной сборки.
 2. Каждая локализация — отдельная строка `pages`; пары объединяет UUID `translation_group`.
-3. Production публикует только `status=published`; preview добавляет `status=draft` и всегда возвращает `X-Robots-Tag/noindex` на уровне страницы/прокси.
-4. Astro выполняет статическую сборку. Изменение Directus создаёт ChangeTask и инициирует новую preview/production-сборку, поэтому опубликованный артефакт неизменяем и откатывается по digest.
+3. Public adapter возвращает только `status=published`; preview дополнительно накладывает новую полную draft-версию из `language_versions`. Локально страница получает meta `noindex`; внешний preview должен дополнительно вернуть proxy `X-Robots-Tag`.
+4. Astro выполняет SSR из общего immutable image. Код откатывается по digest; content revision и `ChangeTask` версионируются отдельно. Автоматический Directus webhook/build trigger в этапе 1 не реализован.
 5. UI-компоненты едины: preview меняет только policy получения данных и SEO robots.
 6. GitHub PR — граница изменения кода/схемы; редакторское изменение Directus версионируется в Directus и связывается с `change_tasks`.
 
