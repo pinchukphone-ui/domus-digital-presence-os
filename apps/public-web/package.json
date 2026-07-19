@@ -12,7 +12,6 @@
   "dependencies": {
     "@astrojs/node": "^10.0.5",
     "@astrojs/react": "^4.4.2",
-    "@astrojs/sitemap": "^3.6.0",
     "@domus/api-client": "workspace:*",
     "@domus/content-model": "workspace:*",
     "@domus/design-system": "workspace:*",
