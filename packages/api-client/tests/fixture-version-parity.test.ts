@@ -7,14 +7,16 @@ afterEach(() => {
 });
 
 describe('fixture version parity', () => {
-  it('preserves the immutable v3 and v4 snapshot status history', () => {
+  it('preserves immutable publication, candidate and rollback snapshot history', () => {
     expect(mortgageHubFixtureVersions.map(({ version, status, snapshot }) => ({
       version,
       rowStatus: status,
       snapshotStatus: snapshot.page.status
     }))).toEqual([
       { version: 3, rowStatus: 'published', snapshotStatus: 'draft' },
-      { version: 4, rowStatus: 'draft', snapshotStatus: 'published' }
+      { version: 4, rowStatus: 'draft', snapshotStatus: 'published' },
+      { version: 5, rowStatus: 'draft', snapshotStatus: 'published' },
+      { version: 6, rowStatus: 'draft', snapshotStatus: 'published' }
     ]);
   });
 
@@ -30,15 +32,16 @@ describe('fixture version parity', () => {
     expect(service?.blocks[0]?.body).not.toContain('Черновик версии 4:');
   });
 
-  it('overlays only the v4 snapshot in fixture preview', async () => {
+  it('overlays the append-only v6 rollback snapshot in fixture preview', async () => {
     vi.stubEnv('CONTENT_SOURCE', 'fixture');
     const hub = await getMortgageHub({ includeDrafts: true });
     const service = hub.pages.find((page) => page.id === 'service-ru');
 
     expect(hub.pages).toHaveLength(8);
     expect(service?.status).toBe('draft');
-    expect(service?.contentVersion).toBe(4);
+    expect(service?.contentVersion).toBe(6);
     expect(service?.previewCandidate).toBe(true);
     expect(service?.blocks[0]?.body).toContain('Черновик версии 4:');
+    expect(service?.blocks[0]?.body).not.toContain('Технический черновик Directus REST v5:');
   });
 });

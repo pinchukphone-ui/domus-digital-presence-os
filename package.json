@@ -22,7 +22,9 @@
     "backup": "bash infrastructure/database/backup.sh",
     "restore": "bash infrastructure/database/restore.sh",
     "directus:snapshot": "docker compose --env-file .env -f infrastructure/docker/compose.yml run --rm directus /bin/sh -c 'node cli.js schema snapshot --yes /directus/snapshots/schema.yaml'",
-    "directus:apply-renderer-access": "bash infrastructure/database/apply-directus-renderer-access.sh"
+    "directus:apply-renderer-access": "bash infrastructure/database/apply-directus-renderer-access.sh",
+    "directus:apply-service-ru-v5": "bash infrastructure/database/apply-directus-content-change.sh docs/operations/change-manifests/service-ru-directus-v5.json",
+    "directus:rollback-service-ru-v6": "bash infrastructure/database/apply-directus-content-change.sh docs/operations/change-manifests/service-ru-directus-v6-rollback.json"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",

@@ -22,7 +22,7 @@
 | 6. Public frontend | Принято | Directus REST, Astro SSR, маршруты, title/description, canonical, hreflang, breadcrumbs, links, runtime sitemap, responsive CSS и React island. |
 | 7. Preview | Локально принято | Один renderer, v4 draft видна только в preview, meta `noindex,nofollow,noarchive`; preview sitemap закрыт. Внешние auth и proxy `X-Robots-Tag` отложены до deployment. |
 | 8. Codex workflow | Принято как процесс | Короткий `AGENTS.md`, Architect/Builder/Reviewer и verification skills; branch + PR используется. Branch protection требует PR и актуальный `validate`; GitHub-native обязательный approval сейчас не настроен. |
-| 9. Автопроверки | Принято | Typecheck, lint, 26 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. Fixture и Directus моделируют одну пару public v3 / preview v4. |
+| 9. Автопроверки | Принято | Typecheck, lint, 31 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. Fixture моделирует ожидаемое post-drill состояние public v3 / preview rollback v6. |
 | 10. Демонстрационный цикл | Частично принято | Version/change task, preview, PR, review, merge, local promotion, verification и DB restore drill доказаны. Directus-originated write — пробел A2; внешний deployment/rollback отложены. |
 
 ## Итоговые материалы
@@ -31,7 +31,7 @@
 | --- | --- |
 | Структура, архитектурная схема и модель данных | В Git, подтверждены |
 | Команды запуска и deployment instructions | В Git, локальные команды проверены |
-| Результаты тестов | `pnpm validate`, 26/26 unit, 6/6 E2E; локальный Directus readback green |
+| Результаты тестов | `pnpm validate`, 31/31 unit, 6/6 E2E; REST execution readback ожидает merge/approval |
 | Preview URL | Только локальный: `http://localhost:4322/ru/ipoteka/konsultaciya` |
 | Production pilot URL | Только локальный public: `http://localhost:4321/pl/kredyty-hipoteczne`; внешнего URL нет |
 | Rollback | DB restore drill подтверждён; внешний image rollback невозможен до первого deployment |
@@ -60,6 +60,8 @@ Readback: public fixture содержит 8 published страниц и v3; prev
 - Перед выполнением создать backup; после записи прочитать API/DB state, public unchanged и preview candidate.
 - Скрипт и тест используют нейтральный текст без юридических утверждений и персональных данных.
 - Rollback создаёт следующую revision из предыдущего полного snapshot; история не переписывается.
+
+Implementation candidate: manifests v5/v6, backup-gated operator и mock REST contract готовы. До Reviewer approval локальный REST write намеренно не выполняется; fixture показывает ожидаемое состояние после apply + rollback.
 
 После A2 повторить `pnpm validate`, E2E против fixture и live Directus, backup/restore readback и обновить эту матрицу на `Принято локально`.
 

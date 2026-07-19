@@ -14,3 +14,7 @@
 ## Следующий черновик после локальной публикации
 
 После публикации v3 выполните `pnpm db:prepare-service-ru-preview-v4`. Команда добавляет только immutable snapshot v4 и отдельный `ChangeTask`; `pages` и `content_blocks` остаются на published v3. Public URL продолжает показывать v3 и не запрашивает `language_versions`, а тот же путь на preview URL показывает v4, banner `PREVIEW · v4` и `noindex`. Сверьте границу с `change-manifests/service-ru-preview-v4.json`. Публикация v4 и внешний deployment требуют отдельных задач.
+
+## Directus-originated REST drill
+
+После отдельного PR/review выполните v5 и rollback v6 командами из `local-development.md`. В отличие от ранних SQL content changes, обе revisions и связанные `ChangeTask` создаются через Directus REST. V5 содержит только нейтральный технический текст; v6 append-only восстанавливает полный v4 snapshot. Ни одна команда не изменяет published `pages`/`content_blocks`, не удаляет историю и не включает внешний deployment.

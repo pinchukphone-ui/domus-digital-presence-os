@@ -76,7 +76,42 @@ export const HubSchema = z.object({
   pages: z.array(PageSchema)
 });
 
+export const DirectusContentChangeManifestSchema = z.object({
+  schema_version: z.literal(1),
+  task_id: z.string().uuid(),
+  title: z.string().min(1),
+  scope: z.string().min(1),
+  target_page_id: z.string().min(1),
+  base_version: z.number().int().positive(),
+  snapshot_source_version: z.number().int().positive(),
+  candidate_version: z.number().int().positive(),
+  candidate_status: z.literal('draft'),
+  workflow_status: z.enum(['in_review', 'rolled_back']),
+  preview_url: z.string().url(),
+  public_url: z.string().url(),
+  rollback_reference: z.string().min(1),
+  change: z.object({
+    block_id: z.string().min(1),
+    field: z.literal('body'),
+    from: z.string().min(1),
+    to: z.string().min(1)
+  }),
+  verification: z.object({
+    public_body: z.string().min(1),
+    preview_body: z.string().min(1)
+  }),
+  external_deployment: z.literal(false)
+}).superRefine((manifest, context) => {
+  if (manifest.candidate_version <= manifest.base_version) {
+    context.addIssue({ code: 'custom', path: ['candidate_version'], message: 'candidate_version must be newer than base_version' });
+  }
+  if (manifest.snapshot_source_version > manifest.candidate_version) {
+    context.addIssue({ code: 'custom', path: ['snapshot_source_version'], message: 'snapshot source cannot be newer than candidate' });
+  }
+});
+
 export type Language = z.infer<typeof LanguageSchema>;
 export type LanguageVersionSnapshot = z.infer<typeof LanguageVersionSnapshotSchema>;
 export type Page = z.infer<typeof PageSchema>;
 export type Hub = z.infer<typeof HubSchema>;
+export type DirectusContentChangeManifest = z.infer<typeof DirectusContentChangeManifestSchema>;

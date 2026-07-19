@@ -54,11 +54,11 @@ test('consultation demo validates locally without sending data', async ({ page }
   await expect(page).toHaveURL(/\/pl\/kredyty-hipoteczne\/konsultacja$/);
 });
 
-test('preview overlays v4 with noindex while production remains on v3', async ({ page, request }) => {
+test('preview overlays the v6 rollback with noindex while production remains on v3', async ({ page, request }) => {
   const consultation = '/ru/ipoteka/konsultaciya';
   await page.goto(`http://127.0.0.1:4322${consultation}`);
   await expect(page.locator('.preview-banner')).toBeVisible();
-  await expect(page.locator('.preview-banner')).toContainText('PREVIEW · v4');
+  await expect(page.locator('.preview-banner')).toContainText('PREVIEW · v6');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow,noarchive');
   await expect(page.getByText(/Черновик версии 4:/)).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Навигационная цепочка' }).getByRole('link', { name: 'Ипотека' })).toHaveAttribute('href', '/ru/ipoteka');
