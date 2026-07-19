@@ -4,7 +4,7 @@ const productionRoutes = [
   '/pl/kredyty-hipoteczne', '/ru/ipoteka',
   '/pl/kredyty-hipoteczne/proces', '/ru/ipoteka/process',
   '/pl/kredyty-hipoteczne/zdolnosc', '/ru/ipoteka/kreditosposobnost',
-  '/pl/kredyty-hipoteczne/konsultacja'
+  '/pl/kredyty-hipoteczne/konsultacja', '/ru/ipoteka/konsultaciya'
 ];
 
 test('renders the complete published hub with SEO metadata and valid links', async ({ page, request }) => {
@@ -54,19 +54,25 @@ test('consultation demo validates locally without sending data', async ({ page }
   await expect(page).toHaveURL(/\/pl\/kredyty-hipoteczne\/konsultacja$/);
 });
 
-test('preview exposes draft with noindex while production does not', async ({ page, request }) => {
-  const draft = '/ru/ipoteka/konsultaciya';
-  await page.goto(`http://127.0.0.1:4322${draft}`);
+test('preview overlays v4 with noindex while production remains on v3', async ({ page, request }) => {
+  const consultation = '/ru/ipoteka/konsultaciya';
+  await page.goto(`http://127.0.0.1:4322${consultation}`);
   await expect(page.locator('.preview-banner')).toBeVisible();
+  await expect(page.locator('.preview-banner')).toContainText('PREVIEW · v4');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow,noarchive');
+  await expect(page.getByText(/Черновик версии 4:/)).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Навигационная цепочка' }).getByRole('link', { name: 'Ипотека' })).toHaveAttribute('href', '/ru/ipoteka');
-  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', draft);
+  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', consultation);
   const form = page.getByTestId('consultation-demo-form');
   await form.getByLabel('Эл. почта').fill('client@example.com');
   await form.getByRole('button', { name: 'Проверить форму' }).click();
   await expect(form.getByRole('status')).toHaveText('Форма работает. Данные не были отправлены.');
-  const production = await request.get(`http://127.0.0.1:4321${draft}`, { maxRedirects: 0 });
-  expect(production.status()).toBe(302);
+
+  const production = await request.get(`http://127.0.0.1:4321${consultation}`);
+  expect(production.status()).toBe(200);
+  const productionBody = await production.text();
+  expect(productionBody).toContain('Рабочая интеграция требует отдельной задачи');
+  expect(productionBody).not.toContain('Черновик версии 4:');
 });
 
 test('publishes one runtime sitemap and exposes no generated sitemap files in preview', async ({ request }) => {
@@ -76,7 +82,6 @@ test('publishes one runtime sitemap and exposes no generated sitemap files in pr
 
   const publicBody = await publicSitemap.text();
   for (const route of productionRoutes) expect(publicBody).toContain(`http://127.0.0.1:4321${route}`);
-  expect(publicBody).not.toContain('/ru/ipoteka/konsultaciya');
 
   const previewSitemap = await request.get('http://127.0.0.1:4322/sitemap.xml');
   expect(previewSitemap.status()).toBe(404);

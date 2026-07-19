@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { mortgageHubFixture } from '../src/fixture';
 
 const manifestPath = fileURLToPath(new URL('../../../docs/operations/change-manifests/service-ru-v3.json', import.meta.url));
+const publicationManifestPath = fileURLToPath(new URL('../../../docs/operations/change-manifests/service-ru-publication-v3.json', import.meta.url));
 const migrationPath = fileURLToPath(new URL('../../../infrastructure/database/content-changes/002_service_ru_review.sql', import.meta.url));
 const composePath = fileURLToPath(new URL('../../../infrastructure/docker/compose.yml', import.meta.url));
 const wrapperPath = fileURLToPath(new URL('../../../infrastructure/database/apply-service-ru-review.sh', import.meta.url));
@@ -19,6 +20,11 @@ describe('service-ru review candidate', () => {
     rollback_reference: string;
     changes: Array<{ id: string; field: string; from: string; to: string }>;
   };
+  const publicationManifest = JSON.parse(readFileSync(publicationManifestPath, 'utf8')) as {
+    review_status: string;
+    content_version: number;
+    publication_scope: string;
+  };
   const migration = readFileSync(migrationPath, 'utf8');
   const compose = readFileSync(composePath, 'utf8');
   const wrapper = readFileSync(wrapperPath, 'utf8');
@@ -26,9 +32,13 @@ describe('service-ru review candidate', () => {
   const page = mortgageHubFixture.pages.find((candidate) => candidate.id === manifest.target_page_id);
   const blockChange = manifest.changes[0];
 
-  it('keeps the candidate draft and matches the fixture copy', () => {
+  it('preserves the review manifest and reflects the approved v3 publication in the fixture', () => {
     expect(manifest.page_status).toBe('draft');
-    expect(page?.status).toBe('draft');
+    expect(manifest.workflow_status).toBe('in_review');
+    expect(publicationManifest.review_status).toBe('Approved');
+    expect(publicationManifest.content_version).toBe(3);
+    expect(publicationManifest.publication_scope).toBe('local_only');
+    expect(page?.status).toBe('published');
     expect(blockChange?.id).toBe('service-body-ru');
     expect(blockChange?.field).toBe('body');
     expect(page?.blocks.find((block) => block.id === blockChange?.id)?.body).toBe(blockChange?.to);

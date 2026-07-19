@@ -6,10 +6,9 @@
 
 Локальный production-like vertical slice условно принят. PostgreSQL, Directus и два Astro runtime воспроизводятся через Docker Compose; public и preview используют разные read-only credentials; PL/RU hub, SEO, draft preview, CI, backup/restore и PR workflow подтверждены.
 
-Внешний release не входит в текущую приёмку по решению владельца: VPS, домены, TLS, стабильные внешние URL и production rollback по digest намеренно не создавались. До закрытия двух локальных пробелов нельзя считать демонстрационный цикл полностью воспроизводимым только по CI:
+Внешний release не входит в текущую приёмку по решению владельца: VPS, домены, TLS, стабильные внешние URL и production rollback по digest намеренно не создавались. Fixture/Directus parity закрыта общим renderer-контрактом и E2E. До закрытия оставшегося локального пробела нельзя считать демонстрационный цикл полностью воспроизводимым только по CI:
 
-1. fixture/E2E отражает исходные `7 published + 1 draft`, а локальный Directus — `8 published` с отдельной draft-версией v4;
-2. контентный цикл доказан транзакционными SQL/change manifests, но входящее изменение через Directus API/UI ещё не продемонстрировано.
+1. контентный цикл доказан транзакционными SQL/change manifests, но входящее изменение через Directus API/UI ещё не продемонстрировано.
 
 ## Матрица десяти задач
 
@@ -23,7 +22,7 @@
 | 6. Public frontend | Принято | Directus REST, Astro SSR, маршруты, title/description, canonical, hreflang, breadcrumbs, links, runtime sitemap, responsive CSS и React island. |
 | 7. Preview | Локально принято | Один renderer, v4 draft видна только в preview, meta `noindex,nofollow,noarchive`; preview sitemap закрыт. Внешние auth и proxy `X-Robots-Tag` отложены до deployment. |
 | 8. Codex workflow | Принято как процесс | Короткий `AGENTS.md`, Architect/Builder/Reviewer и verification skills; branch + PR используется. Branch protection требует PR и актуальный `validate`; GitHub-native обязательный approval сейчас не настроен. |
-| 9. Автопроверки | Принято с пробелом A1 | Typecheck, lint, 23 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. CI fixture не моделирует текущую пару public v3 / preview v4. |
+| 9. Автопроверки | Принято | Typecheck, lint, 26 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. Fixture и Directus моделируют одну пару public v3 / preview v4. |
 | 10. Демонстрационный цикл | Частично принято | Version/change task, preview, PR, review, merge, local promotion, verification и DB restore drill доказаны. Directus-originated write — пробел A2; внешний deployment/rollback отложены. |
 
 ## Итоговые материалы
@@ -32,7 +31,7 @@
 | --- | --- |
 | Структура, архитектурная схема и модель данных | В Git, подтверждены |
 | Команды запуска и deployment instructions | В Git, локальные команды проверены |
-| Результаты тестов | `pnpm validate`, 23/23 unit, 6/6 E2E; post-merge CI green |
+| Результаты тестов | `pnpm validate`, 26/26 unit, 6/6 E2E; локальный Directus readback green |
 | Preview URL | Только локальный: `http://localhost:4322/ru/ipoteka/konsultaciya` |
 | Production pilot URL | Только локальный public: `http://localhost:4321/pl/kredyty-hipoteczne`; внешнего URL нет |
 | Rollback | DB restore drill подтверждён; внешний image rollback невозможен до первого deployment |
@@ -40,7 +39,7 @@
 
 ## Локальные closure-задачи
 
-### A1. Синхронизировать CI fixture с version-aware состоянием
+### A1. Закрыто: CI fixture синхронизирован с version-aware состоянием
 
 Роль: Builder. Один PR.
 
@@ -49,6 +48,8 @@
 - Preview E2E проверяет v4 banner/text и отсутствие v4 в public.
 - Directus adapter и fixture должны проходить один общий контрактный набор тестов.
 - Rollback: revert PR; локальная БД не изменяется.
+
+Readback: public fixture содержит 8 published страниц и v3; preview накладывает отдельный v4 snapshot. 26/26 unit, 6/6 E2E и live Directus public v3 / preview v4 прошли.
 
 ### A2. Доказать Directus-originated content change
 
@@ -60,7 +61,7 @@
 - Скрипт и тест используют нейтральный текст без юридических утверждений и персональных данных.
 - Rollback создаёт следующую revision из предыдущего полного snapshot; история не переписывается.
 
-После A1 и A2 повторить `pnpm validate`, E2E против fixture и live Directus, backup/restore readback и обновить эту матрицу на `Принято локально`.
+После A2 повторить `pnpm validate`, E2E против fixture и live Directus, backup/restore readback и обновить эту матрицу на `Принято локально`.
 
 ## Backlog перед внешним pilot
 

@@ -11,7 +11,7 @@
 - Backup/restore проверен на отдельной временной БД; аварийный restore рабочей production-БД не выполнялся.
 - Производный PostgreSQL image содержит только замену `gosu` на Alpine `su-exec`; его необходимо пересобирать при каждом обновлении закреплённого upstream digest.
 - Контент fixture — новый нейтральный пилот, не юридически утверждённый перенос Wix.
-- CI fixture пока отражает `7 published + 1 draft`, а локальный Directus — `8 published` и отдельный draft snapshot v4; это локальная closure-задача A1.
+- CI fixture синхронизирован с локальным Directus: 8 published pages, public v3 и отдельный preview snapshot v4 проходят общий renderer-контракт.
 - Контентные revisions создавались версионированными SQL/change manifests; Directus-originated REST/UI write остаётся closure-задачей A2.
 
 ## Следующий этап
