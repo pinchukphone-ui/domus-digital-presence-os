@@ -1,5 +1,5 @@
 import { HubSchema, LanguageVersionSnapshotSchema, type Hub, type Page } from '@domus/content-model';
-import { mortgageHubFixture } from './fixture';
+import { mortgageHubFixture, mortgageHubFixtureVersions } from './fixture';
 
 type DirectusList<T> = { data: T[] };
 type DbPage = {
@@ -25,12 +25,18 @@ async function list<T>(base: string, collection: string, token?: string): Promis
 
 export async function getMortgageHub(options: { includeDrafts?: boolean } = {}): Promise<Hub> {
   if ((process.env.CONTENT_SOURCE ?? 'fixture') === 'fixture') {
-    const visiblePages = mortgageHubFixture.pages.filter((page) => options.includeDrafts ? page.status !== 'archived' : page.status === 'published');
-    const visiblePaths = new Set(visiblePages.map((page) => page.canonicalPath));
-    return HubSchema.parse({ ...mortgageHubFixture, pages: visiblePages.map((page) => ({
-      ...page, links: page.links.filter((link) => visiblePaths.has(link.href)),
-      cta: page.cta && visiblePaths.has(page.cta.href.split('#')[0]!) ? page.cta : null
-    })) });
+    const pathToPage = new Map(mortgageHubFixture.pages.map((page) => [page.canonicalPath, page.id]));
+    return renderMortgageHub({
+      pages: mortgageHubFixture.pages.map(toDbPage),
+      blocks: mortgageHubFixture.pages.flatMap((page) => page.blocks.map((block) => ({ ...block, page_id: page.id }))),
+      links: mortgageHubFixture.pages.flatMap((page) => page.links.map((link) => ({
+        source_page_id: page.id,
+        target_page_id: pathToPage.get(link.href) ?? '',
+        ...link
+      }))),
+      ctas: mortgageHubFixture.pages.flatMap((page) => page.cta ? [{ ...page.cta, page_id: page.id }] : []),
+      versions: options.includeDrafts ? mortgageHubFixtureVersions : []
+    }, Boolean(options.includeDrafts));
   }
   const base = process.env.DIRECTUS_INTERNAL_URL ?? process.env.DIRECTUS_PUBLIC_URL;
   if (!base) throw new Error('DIRECTUS_INTERNAL_URL or DIRECTUS_PUBLIC_URL is required');
@@ -40,7 +46,15 @@ export async function getMortgageHub(options: { includeDrafts?: boolean } = {}):
     list<DbLink>(base, 'internal_links', token), list<DbCta>(base, 'ctas', token),
     options.includeDrafts ? list<DbLanguageVersion>(base, 'language_versions', token) : Promise.resolve([])
   ]);
-  const visible = pages.filter((item) => options.includeDrafts ? item.status !== 'archived' : item.status === 'published');
+  return renderMortgageHub({ pages, blocks, links, ctas, versions }, Boolean(options.includeDrafts));
+}
+
+function renderMortgageHub(
+  records: { pages: DbPage[]; blocks: DbBlock[]; links: DbLink[]; ctas: DbCta[]; versions: DbLanguageVersion[] },
+  includeDrafts: boolean
+): Hub {
+  const { pages, blocks, links, ctas, versions } = records;
+  const visible = pages.filter((item) => includeDrafts ? item.status !== 'archived' : item.status === 'published');
   const visibleIds = new Set(visible.map((item) => item.id));
   const visiblePaths = new Set(visible.map((item) => item.canonical_path));
   const renderedPages = visible.map((item) => {
@@ -59,6 +73,21 @@ export async function getMortgageHub(options: { includeDrafts?: boolean } = {}):
     };
   });
   return HubSchema.parse({ id: 'mortgage-hub', key: 'mortgage', name: 'DOMUS Mortgage Hub', pages: renderedPages });
+}
+
+function toDbPage(page: Page): DbPage {
+  return {
+    id: page.id,
+    hub_id: page.hubId,
+    translation_group: page.translationGroup,
+    language: page.language,
+    slug: page.slug,
+    status: page.status,
+    title: page.title,
+    meta_description: page.metaDescription,
+    canonical_path: page.canonicalPath,
+    page_type: page.pageType
+  };
 }
 
 function latestDraftVersion(page: DbPage, versions: DbLanguageVersion[]) {

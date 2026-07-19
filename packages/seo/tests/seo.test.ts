@@ -8,9 +8,8 @@ describe('hreflang', () => {
     expect(alternatePages(page, mortgageHubFixture.pages).map((item) => item.language).sort()).toEqual(['pl', 'ru']);
   });
 
-  it('does not expose a draft alternate', () => {
+  it('pairs the published service translations', () => {
     const page = mortgageHubFixture.pages.find((item) => item.id === 'service-pl')!;
-    expect(alternatePages(page, mortgageHubFixture.pages)).toHaveLength(1);
+    expect(alternatePages(page, mortgageHubFixture.pages).map((item) => item.language).sort()).toEqual(['pl', 'ru']);
   });
 });
-
