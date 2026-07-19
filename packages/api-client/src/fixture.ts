@@ -92,5 +92,25 @@ export const mortgageHubFixtureVersions: MortgageHubFixtureVersion[] = [
       'Черновик версии 4: демонстрационная форма не отправляет данные. Перед публикацией требуется отдельная проверка текста, согласий и политики конфиденциальности.',
       'published'
     )
+  },
+  {
+    page_id: serviceRu.id,
+    version: 5,
+    status: 'draft',
+    snapshot: snapshot(
+      serviceRu,
+      'Технический черновик Directus REST v5: демонстрационная форма не отправляет и не сохраняет данные. Этот текст предназначен только для проверки version workflow.',
+      'published'
+    )
+  },
+  {
+    page_id: serviceRu.id,
+    version: 6,
+    status: 'draft',
+    snapshot: snapshot(
+      serviceRu,
+      'Черновик версии 4: демонстрационная форма не отправляет данные. Перед публикацией требуется отдельная проверка текста, согласий и политики конфиденциальности.',
+      'published'
+    )
   }
 ];

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "2f7cc421-7c85-4a90-8ca7-9799f9cfd105",
+  "title": "Directus REST content-change demonstration v5",
+  "scope": "Append-only technical draft created through Directus REST; published page and blocks remain unchanged",
+  "target_page_id": "service-ru",
+  "base_version": 4,
+  "snapshot_source_version": 4,
+  "candidate_version": 5,
+  "candidate_status": "draft",
+  "workflow_status": "in_review",
+  "preview_url": "http://localhost:4322/ru/ipoteka/konsultaciya",
+  "public_url": "http://localhost:4321/ru/ipoteka/konsultaciya",
+  "rollback_reference": "language_versions:service-ru:4",
+  "change": {
+    "block_id": "service-body-ru",
+    "field": "body",
+    "from": "Черновик версии 4: демонстрационная форма не отправляет данные. Перед публикацией требуется отдельная проверка текста, согласий и политики конфиденциальности.",
+    "to": "Технический черновик Directus REST v5: демонстрационная форма не отправляет и не сохраняет данные. Этот текст предназначен только для проверки version workflow."
+  },
+  "verification": {
+    "public_body": "Рабочая интеграция требует отдельной задачи",
+    "preview_body": "Технический черновик Directus REST v5"
+  },
+  "external_deployment": false
+}

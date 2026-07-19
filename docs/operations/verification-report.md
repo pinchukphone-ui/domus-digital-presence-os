@@ -10,7 +10,7 @@
 - Та же страница в public: HTTP 200, published v3 и `index,follow`; текст v4 отсутствует.
 - `/sitemap.xml`: HTTP 200, 8 URL.
 - Browser E2E: 6/6 — published hub/links/SEO, React calculator, consultation demo, preview и sitemap boundaries.
-- Unit tests: 26/26; E2E: 6/6; typecheck, lint, Astro build и content validation для 8 published pages прошли.
+- Unit tests: 31/31; E2E: 6/6; typecheck, lint, Astro build и content validation для 8 published pages прошли. Directus REST v5/v6 execution остаётся post-merge gate.
 
 ## Russian consultation review candidate
 

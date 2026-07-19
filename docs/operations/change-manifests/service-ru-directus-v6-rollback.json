@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task_id": "3a76b9aa-854e-4ba0-914d-cc4c1252ab06",
+  "title": "Rollback Directus REST demonstration to v4 content",
+  "scope": "Append-only rollback revision created through Directus REST; v5 remains immutable and published data remains unchanged",
+  "target_page_id": "service-ru",
+  "base_version": 5,
+  "snapshot_source_version": 4,
+  "candidate_version": 6,
+  "candidate_status": "draft",
+  "workflow_status": "rolled_back",
+  "preview_url": "http://localhost:4322/ru/ipoteka/konsultaciya",
+  "public_url": "http://localhost:4321/ru/ipoteka/konsultaciya",
+  "rollback_reference": "language_versions:service-ru:4",
+  "change": {
+    "block_id": "service-body-ru",
+    "field": "body",
+    "from": "Технический черновик Directus REST v5: демонстрационная форма не отправляет и не сохраняет данные. Этот текст предназначен только для проверки version workflow.",
+    "to": "Черновик версии 4: демонстрационная форма не отправляет данные. Перед публикацией требуется отдельная проверка текста, согласий и политики конфиденциальности."
+  },
+  "verification": {
+    "public_body": "Рабочая интеграция требует отдельной задачи",
+    "preview_body": "Черновик версии 4:"
+  },
+  "external_deployment": false
+}
