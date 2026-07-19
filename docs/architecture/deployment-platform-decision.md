@@ -27,7 +27,7 @@ restricted SSH; PostgreSQL and Directus internal ports are not public.
 
 ## Safety gates
 
-- `main` requires a PR, one approval, current `validate`, and resolved threads.
+- `main` currently requires a PR and current `validate`; the repository process separately requires Reviewer `Approved`, while GitHub-native required approval count is currently zero.
 - GitHub `production` requires an explicit environment approval.
 - Repository variable `DEPLOYMENT_ENABLED` remains `false` until infrastructure,
   domains, backup, preview authentication and live verification are ready.

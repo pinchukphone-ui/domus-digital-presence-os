@@ -9,8 +9,8 @@
 - Preview `/ru/ipoteka/konsultaciya`: HTTP 200, version-aware banner `PREVIEW · v4`, `noindex,nofollow,noarchive`.
 - Та же страница в public: HTTP 200, published v3 и `index,follow`; текст v4 отсутствует.
 - `/sitemap.xml`: HTTP 200, 8 URL.
-- Browser E2E: 5/5 — published hub/links/SEO, React calculator, consultation demo и preview boundary.
-- Unit tests: 23/23; E2E: 5/5; typecheck, lint, Astro build и content validation прошли.
+- Browser E2E: 6/6 — published hub/links/SEO, React calculator, consultation demo, preview и sitemap boundaries.
+- Unit tests: 23/23; E2E: 6/6; typecheck, lint, Astro build и content validation прошли.
 
 ## Russian consultation review candidate
 
