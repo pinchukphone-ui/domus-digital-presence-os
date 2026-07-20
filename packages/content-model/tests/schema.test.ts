@@ -4,7 +4,13 @@ import { mortgageHubFixture } from '../../api-client/src/fixture';
 
 describe('content schema', () => {
   it('accepts the bilingual mortgage fixture', () => {
-    expect(HubSchema.parse(mortgageHubFixture).pages).toHaveLength(8);
+    const hub = HubSchema.parse(mortgageHubFixture);
+    expect(hub.pages).toHaveLength(8);
+    expect(hub.mediaAssets).toEqual([expect.objectContaining({
+      id: '55555555-5555-4555-8555-555555555555',
+      directusFileId: null,
+      rightsSource: 'DOMUS-owned wordmark; local pilot metadata'
+    })]);
   });
 
   it('keeps one pl and one ru page in every translation group', () => {

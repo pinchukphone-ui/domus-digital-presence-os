@@ -152,6 +152,9 @@ VALUES
   ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_ctas', 'read', NULL, NULL, NULL, '*');
 
 INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
+VALUES ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'media_assets', 'read', NULL, NULL, NULL, '*');
+
+INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
 SELECT
   'bc52e31f-aa95-4ca3-b624-7011a2764b92',
   collection,
@@ -165,6 +168,7 @@ FROM (VALUES
   ('content_blocks'),
   ('internal_links'),
   ('ctas'),
+  ('media_assets'),
   ('language_versions')
 ) AS preview_collections(collection);
 

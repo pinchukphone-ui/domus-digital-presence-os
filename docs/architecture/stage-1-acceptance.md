@@ -16,7 +16,7 @@
 | 2. Архитектурный каркас | Принято | `apps`, `packages`, `infrastructure`, `docs`; девять content collections; микросервисы не добавлены. |
 | 3. Локальный стек | Принято | PostgreSQL, Directus, public и preview healthy; `.env.example`, migrations, seed, health checks, backup/restore. В Git отслеживается только `.env.example`. |
 | 4. Модель данных | Принято | Hub, Page, ContentBlock, LanguageVersion, Service, CTA, InternalLink, MediaAsset, ChangeTask; `pl`/`ru`; отдельные строки страниц и UUID `translation_group`. |
-| 5. Тестовый hub | Принято с ограничением | 1 hub, 8 страниц (4 PL + 4 RU), 2 service records, 2 CTA, calculator, demo form и внутренние связи. `media_assets` поддерживается схемой, но пилотная запись не создана. |
+| 5. Тестовый hub | Принято | 1 hub, 8 страниц (4 PL + 4 RU), 2 service records, 2 CTA, calculator, demo form, внутренние связи и bilingual metadata для DOMUS-owned MediaAsset. |
 | 6. Public frontend | Принято | Directus REST, Astro SSR, маршруты, title/description, canonical, hreflang, breadcrumbs, links, runtime sitemap, responsive CSS и React island. |
 | 7. Preview | Локально принято | Один renderer, rollback v6 виден только в preview; Basic Auth, meta `noindex,nofollow,noarchive`, raw proxy `X-Robots-Tag` и закрытый preview sitemap проверяются E2E. Внешний SSO/TLS отложен до deployment. |
 | 8. Codex workflow | Принято как процесс | Короткий `AGENTS.md`, Architect/Builder/Reviewer и verification skills; branch + PR используется. Branch protection требует PR и актуальный `validate`; GitHub-native обязательный approval сейчас не настроен. |

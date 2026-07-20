@@ -48,9 +48,10 @@ describe('Directus schema snapshot', () => {
     expect(metadata).toContain('DIRECTUS_PUBLIC_TOKEN');
     expect(metadata).toContain('DIRECTUS_PREVIEW_TOKEN');
     expect(metadata).toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_pages', 'read', NULL");
+    expect(metadata).toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'media_assets', 'read', NULL");
     expect(metadata).not.toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'pages', 'read', NULL");
     expect(metadata).not.toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'language_versions'");
-    expect(previewCollections).toEqual(['pages', 'content_blocks', 'internal_links', 'ctas', 'language_versions']);
+    expect(previewCollections).toEqual(['pages', 'content_blocks', 'internal_links', 'ctas', 'media_assets', 'language_versions']);
   });
 
   it('keeps public collections transactionally synchronized with published source rows', () => {

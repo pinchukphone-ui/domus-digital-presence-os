@@ -20,6 +20,7 @@
     "db:prepare-service-ru-review": "bash infrastructure/database/apply-service-ru-review.sh",
     "db:publish-service-ru-local": "bash infrastructure/database/publish-service-ru-local.sh",
     "db:prepare-service-ru-preview-v4": "bash infrastructure/database/prepare-service-ru-preview-v4.sh",
+    "db:apply-pilot-media-asset-local": "bash infrastructure/database/apply-pilot-media-asset.sh",
     "backup": "bash infrastructure/database/backup.sh",
     "restore": "bash infrastructure/database/restore.sh",
     "directus:snapshot": "docker compose --env-file .env -f infrastructure/docker/compose.yml run --rm directus /bin/sh -c 'node cli.js schema snapshot --yes /directus/snapshots/schema.yaml'",
