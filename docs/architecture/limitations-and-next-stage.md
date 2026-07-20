@@ -4,7 +4,7 @@
 
 - Нет внешнего deployment host, доменов, TLS/SSO и внешних live URL. Локальный preview защищён Basic Auth и proxy `X-Robots-Tag`; GitHub remote, Actions, GHCR и environments настроены.
 - Локальный контейнерный bootstrap выполнен и проверен; внешний production host всё ещё отсутствует.
-- Directus schema snapshot и две read-only renderer policies экспортируются воспроизводимо. Public credential не читает `language_versions`; отдельный preview credential читает draft snapshots. Published-only rows фильтрует public adapter, поскольку Directus Core 12.1.1 ограничивает custom item permission rules. Оба локальных контура привязаны к loopback.
+- Directus schema snapshot и две read-only renderer policies экспортируются воспроизводимо. Public credential не читает исходные content-коллекции и `language_versions`: он получает только транзакционно синхронизируемые PostgreSQL-коллекции `published_*`. Preview credential читает исходные строки и draft snapshots. Решение закрывает published-only boundary в Directus Core 12.1.1 без лицензируемых custom item rules; оба локальных контура привязаны к loopback.
 - Directus обновлён до 12.1.1 после локальной проверки миграции. До production требуется отдельное подтверждение применимости Core tier/лицензии и повторная проверка актуальных условий.
 - Демонстрационная форма не отправляет и не сохраняет персональные данные.
 - Нет webhook, автоматически создающего PR из content-only change; ChangeTask связывает два процесса вручную.

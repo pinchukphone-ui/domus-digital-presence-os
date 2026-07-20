@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 const snapshotPath = fileURLToPath(new URL('../../../apps/directus/snapshots/schema.yaml', import.meta.url));
 const metadataPath = fileURLToPath(new URL('../../../infrastructure/database/bootstrap/001_directus_metadata.sql', import.meta.url));
+const publishedProjectionPath = fileURLToPath(new URL('../../../infrastructure/database/migrations/002_published_projections.sql', import.meta.url));
 const accessScriptPath = fileURLToPath(new URL('../../../infrastructure/database/apply-directus-renderer-access.sh', import.meta.url));
 const localComposePath = fileURLToPath(new URL('../../../infrastructure/docker/compose.yml', import.meta.url));
 const productionComposePath = fileURLToPath(new URL('../../../infrastructure/deployment/compose.production.yml', import.meta.url));
@@ -17,6 +18,10 @@ const expectedCollections = [
   'language_versions',
   'media_assets',
   'pages',
+  'published_content_blocks',
+  'published_ctas',
+  'published_internal_links',
+  'published_pages',
   'services'
 ];
 
@@ -42,9 +47,22 @@ describe('Directus schema snapshot', () => {
 
     expect(metadata).toContain('DIRECTUS_PUBLIC_TOKEN');
     expect(metadata).toContain('DIRECTUS_PREVIEW_TOKEN');
-    expect(metadata).toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'pages', 'read', NULL");
+    expect(metadata).toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_pages', 'read', NULL");
+    expect(metadata).not.toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'pages', 'read', NULL");
     expect(metadata).not.toContain("'cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'language_versions'");
     expect(previewCollections).toEqual(['pages', 'content_blocks', 'internal_links', 'ctas', 'language_versions']);
+  });
+
+  it('keeps public collections transactionally synchronized with published source rows', () => {
+    const migration = readFileSync(publishedProjectionPath, 'utf8');
+
+    expect(migration).toContain('CREATE TABLE published_pages');
+    expect(migration).toContain("WHERE page.status = 'published'");
+    expect(migration).toContain("WHERE source_page.status = 'published'");
+    expect(migration).toContain("AND target_page.status = 'published'");
+    for (const collection of ['pages', 'content_blocks', 'ctas', 'internal_links']) {
+      expect(migration).toMatch(new RegExp(`AFTER INSERT OR UPDATE OR DELETE OR TRUNCATE ON ${collection}`));
+    }
   });
 
   it('wires distinct tokens and verifies access after clearing Directus permission cache', () => {
@@ -62,6 +80,6 @@ describe('Directus schema snapshot', () => {
     expect(previewCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}');
     expect(accessScript).toContain('restart directus');
     expect(accessScript).toContain('--no-deps public-web preview preview-gateway');
-    expect(accessScript).toContain('pages 200/200, public versions 403, preview versions 200, writes 403/403');
+    expect(accessScript).toContain('public source pages 403, published projection 200, preview source pages 200');
   });
 });

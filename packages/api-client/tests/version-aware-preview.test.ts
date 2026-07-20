@@ -38,9 +38,13 @@ const draftVersion = {
 function mockDirectus(versions: unknown[] = [draftVersion]) {
   const collections: Record<string, unknown[]> = {
     pages: [page],
+    published_pages: [page],
     content_blocks: [publishedBlock],
+    published_content_blocks: [publishedBlock],
     internal_links: [],
+    published_internal_links: [],
     ctas: [],
+    published_ctas: [],
     language_versions: versions
   };
   return vi.fn(async (input: string | URL | Request) => {
@@ -71,6 +75,12 @@ describe('version-aware Directus preview', () => {
     expect(rendered.status).toBe('published');
     expect(rendered.blocks[0]?.body).toBe('Опубликованный текст версии 3.');
     expect(rendered.previewCandidate).toBe(false);
+    expect(fetchMock.mock.calls.map(([input]) => String(input))).toContain(
+      'http://directus.test/items/published_pages?limit=-1'
+    );
+    expect(fetchMock.mock.calls.map(([input]) => String(input))).not.toContain(
+      'http://directus.test/items/pages?limit=-1'
+    );
     expect(fetchMock.mock.calls.map(([input]) => String(input))).not.toContain(
       'http://directus.test/items/language_versions?limit=-1'
     );

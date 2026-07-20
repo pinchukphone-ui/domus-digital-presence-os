@@ -41,9 +41,10 @@ export async function getMortgageHub(options: { includeDrafts?: boolean } = {}):
   const base = process.env.DIRECTUS_INTERNAL_URL ?? process.env.DIRECTUS_PUBLIC_URL;
   if (!base) throw new Error('DIRECTUS_INTERNAL_URL or DIRECTUS_PUBLIC_URL is required');
   const token = process.env.DIRECTUS_STATIC_TOKEN;
+  const collection = (name: string) => options.includeDrafts ? name : `published_${name}`;
   const [pages, blocks, links, ctas, versions] = await Promise.all([
-    list<DbPage>(base, 'pages', token), list<DbBlock>(base, 'content_blocks', token),
-    list<DbLink>(base, 'internal_links', token), list<DbCta>(base, 'ctas', token),
+    list<DbPage>(base, collection('pages'), token), list<DbBlock>(base, collection('content_blocks'), token),
+    list<DbLink>(base, collection('internal_links'), token), list<DbCta>(base, collection('ctas'), token),
     options.includeDrafts ? list<DbLanguageVersion>(base, 'language_versions', token) : Promise.resolve([])
   ]);
   return renderMortgageHub({ pages, blocks, links, ctas, versions }, Boolean(options.includeDrafts));
