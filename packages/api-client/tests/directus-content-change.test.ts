@@ -109,12 +109,21 @@ describe('Directus-originated content change', () => {
   });
 
   it('verifies public isolation, preview version and noindex from rendered HTML', async () => {
-    const fetchMock: typeof fetch = async (input) => {
+    const calls: Array<{ url: string; authorization: string | null }> = [];
+    const fetchMock: typeof fetch = async (input, init) => {
       const url = input instanceof Request ? input.url : input.toString();
+      const headers = new Headers(init?.headers);
+      calls.push({ url, authorization: headers.get('authorization') });
       if (url.includes(':4321')) return new Response('<html>Рабочая интеграция требует отдельной задачи</html>');
-      return new Response('<html><meta content="noindex,nofollow,noarchive">PREVIEW · v5 Технический черновик Directus REST v5</html>');
+      return new Response('<html><meta content="noindex,nofollow,noarchive">PREVIEW · v5 Технический черновик Directus REST v5</html>', {
+        headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' }
+      });
     };
-    await expect(verifyRenderedContentChange(applyManifest, fetchMock)).resolves.toEqual({ publicStatus: 200, previewStatus: 200 });
+    await expect(verifyRenderedContentChange(applyManifest, fetchMock, 'Basic test')).resolves.toEqual({ publicStatus: 200, previewStatus: 200 });
+    expect(calls).toEqual([
+      { url: 'http://localhost:4321/ru/ipoteka/konsultaciya', authorization: null },
+      { url: 'http://localhost:4322/ru/ipoteka/konsultaciya', authorization: 'Basic test' }
+    ]);
   });
 
   it('gates both operator commands with a verified backup and server-only credential', () => {

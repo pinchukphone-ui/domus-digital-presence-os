@@ -88,6 +88,15 @@
 - Preview `/sitemap.xml` возвращает HTTP 404, а отсутствующие `/sitemap-index.xml` и `/sitemap-0.xml` направляются на `/404`; draft URL не экспортируется.
 - Regression E2E: 6/6. Локальный Docker readback подтвердил public sitemap HTTP 200, preview sitemap HTTP 404 и draft-страницу HTTP 200 с `noindex,nofollow,noarchive`.
 
+## Local authenticated preview gateway
+
+- Astro preview renderer больше не публикует host port; стабильный `localhost:4322` обслуживает отдельный infrastructure gateway из `apps/preview`.
+- `/healthz` доступен без credentials; все content URL без Basic Auth возвращают HTTP 401 и `WWW-Authenticate` до обращения к renderer.
+- Authenticated preview сохраняет тот же Astro component tree и Directus preview token; Basic `Authorization` удаляется перед upstream.
+- Все gateway responses, включая 401, rendered 200, 404 и redirects, принудительно содержат raw header `X-Robots-Tag: noindex, nofollow, noarchive`.
+- Unit и E2E покрывают auth rejection, credential stripping, raw headers, preview v6 и sitemap boundary. Внешний SSO/TLS hostname намеренно не создавался.
+- `pnpm preview:rotate-local-credentials` атомарно заменяет оба локальных preview secrets без вывода значений, повторно применяет Directus metadata и пересоздаёт gateway; rotation readback сохранил permission gate `pages 200/200, versions 403/200, writes 403/403`.
+
 ## Не подтверждено
 
 - Внешние preview/production URL намеренно не создавались: deployment отложен до готовности сайта.

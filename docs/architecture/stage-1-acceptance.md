@@ -1,6 +1,6 @@
 # Acceptance-аудит первого этапа
 
-Дата readback: 2026-07-20. Проверяемый commit `main`: `6c7b9952375cb65d4cb52f7458b4cef5cb07eb4e`.
+Дата readback: 2026-07-20. Базовый commit `main`: `12484ba02ac3f6a869a704f41c99953de350aade`; preview gateway проверяется текущим PR.
 
 ## Итог
 
@@ -18,9 +18,9 @@
 | 4. Модель данных | Принято | Hub, Page, ContentBlock, LanguageVersion, Service, CTA, InternalLink, MediaAsset, ChangeTask; `pl`/`ru`; отдельные строки страниц и UUID `translation_group`. |
 | 5. Тестовый hub | Принято с ограничением | 1 hub, 8 страниц (4 PL + 4 RU), 2 service records, 2 CTA, calculator, demo form и внутренние связи. `media_assets` поддерживается схемой, но пилотная запись не создана. |
 | 6. Public frontend | Принято | Directus REST, Astro SSR, маршруты, title/description, canonical, hreflang, breadcrumbs, links, runtime sitemap, responsive CSS и React island. |
-| 7. Preview | Локально принято | Один renderer, rollback v6 виден только в preview, meta `noindex,nofollow,noarchive`; public остаётся на v3, preview sitemap закрыт. Внешние auth и proxy `X-Robots-Tag` отложены до deployment. |
+| 7. Preview | Локально принято | Один renderer, rollback v6 виден только в preview; Basic Auth, meta `noindex,nofollow,noarchive`, raw proxy `X-Robots-Tag` и закрытый preview sitemap проверяются E2E. Внешний SSO/TLS отложен до deployment. |
 | 8. Codex workflow | Принято как процесс | Короткий `AGENTS.md`, Architect/Builder/Reviewer и verification skills; branch + PR используется. Branch protection требует PR и актуальный `validate`; GitHub-native обязательный approval сейчас не настроен. |
-| 9. Автопроверки | Принято | Typecheck, lint, 32 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. Fixture и live Directus подтверждают post-drill состояние public v3 / preview rollback v6. |
+| 9. Автопроверки | Принято | Typecheck, lint, 37 unit tests, schema/content/link/SEO/hreflang validation, build и 7 E2E проходят. Fixture и live Directus подтверждают post-drill состояние public v3 / preview rollback v6. |
 | 10. Демонстрационный цикл | Локально принято | Directus REST write, immutable version/ChangeTask, preview, PR, review, merge, verification, append-only content rollback и DB restore drill доказаны. Внешний deployment/rollback отложены. |
 
 ## Итоговые материалы
@@ -29,7 +29,7 @@
 | --- | --- |
 | Структура, архитектурная схема и модель данных | В Git, подтверждены |
 | Команды запуска и deployment instructions | В Git, локальные команды проверены |
-| Результаты тестов | `pnpm validate`, 32/32 unit, 6/6 fixture E2E; live Directus API/DB/HTML и rollback E2E подтверждены |
+| Результаты тестов | `pnpm validate`, 37/37 unit, 7/7 fixture E2E; live Directus API/DB/HTML, preview gateway и rollback E2E подтверждены |
 | Preview URL | Только локальный: `http://localhost:4322/ru/ipoteka/konsultaciya` |
 | Production pilot URL | Только локальный public: `http://localhost:4321/pl/kredyty-hipoteczne`; внешнего URL нет |
 | Rollback | DB restore drill и append-only content rollback v6 подтверждены; внешний image rollback невозможен до первого deployment |
@@ -67,7 +67,7 @@ Readback после merge PR #19 и runtime-fix PR #20: backup-gated operator ч
 
 Каждый пункт — отдельная Builder-задача и PR:
 
-1. Preview authentication и reverse-proxy `X-Robots-Tag` с проверкой raw headers.
+1. Заменить локальный preview Basic Auth на SSO или отдельный managed secret и повторить raw-header checks на внешнем TLS hostname.
 2. Published-only enforcement на уровне Directus API/view или подтверждённого лицензированного permission tier.
 3. Hetzner/Caddy provisioning, TLS, domains и environment-scoped SSH secrets.
 4. Off-host encrypted database/uploads backup с retention и restore drill.

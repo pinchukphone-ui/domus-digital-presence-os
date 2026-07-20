@@ -55,10 +55,13 @@ describe('Directus schema snapshot', () => {
 
     expect(localCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PUBLIC_TOKEN}');
     expect(localCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}');
+    expect(localCompose).toContain('preview-gateway:');
+    expect(localCompose).toContain('PREVIEW_AUTH_PASSWORD: ${PREVIEW_AUTH_PASSWORD:-${DIRECTUS_PREVIEW_TOKEN}}');
+    expect(localCompose).toContain('ports: ["127.0.0.1:4322:4322"]');
     expect(productionCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PUBLIC_TOKEN}');
     expect(previewCompose).toContain('DIRECTUS_STATIC_TOKEN: ${DIRECTUS_PREVIEW_TOKEN}');
     expect(accessScript).toContain('restart directus');
-    expect(accessScript).toContain('--no-deps public-web preview');
+    expect(accessScript).toContain('--no-deps public-web preview preview-gateway');
     expect(accessScript).toContain('pages 200/200, public versions 403, preview versions 200, writes 403/403');
   });
 });

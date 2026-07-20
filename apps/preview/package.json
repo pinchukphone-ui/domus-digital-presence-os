@@ -2,6 +2,16 @@
   "name": "@domus/preview",
   "version": "0.1.0",
   "private": true,
-  "description": "Deployment profile for the shared public-web image with PREVIEW_MODE=true"
+  "type": "module",
+  "description": "Authenticated noindex reverse proxy for the shared Astro preview renderer",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  }
 }
-

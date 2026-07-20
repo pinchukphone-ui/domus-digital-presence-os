@@ -17,7 +17,7 @@ fi
 compose=(docker compose --env-file .env -f infrastructure/docker/compose.yml)
 "${compose[@]}" up --force-recreate directus-metadata
 "${compose[@]}" restart directus
-"${compose[@]}" up -d --force-recreate --no-deps public-web preview
+"${compose[@]}" up -d --force-recreate --no-deps public-web preview preview-gateway
 
 for attempt in {1..30}; do
   if curl -fs http://127.0.0.1:8055/server/ping >/dev/null \

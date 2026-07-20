@@ -56,7 +56,8 @@ test('consultation demo validates locally without sending data', async ({ page }
 
 test('preview overlays the v6 rollback with noindex while production remains on v3', async ({ page, request }) => {
   const consultation = '/ru/ipoteka/konsultaciya';
-  await page.goto(`http://127.0.0.1:4322${consultation}`);
+  const previewResponse = await page.goto(`http://127.0.0.1:4322${consultation}`);
+  expect(previewResponse?.headers()['x-robots-tag']).toBe('noindex, nofollow, noarchive');
   await expect(page.locator('.preview-banner')).toBeVisible();
   await expect(page.locator('.preview-banner')).toContainText('PREVIEW · v6');
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,nofollow,noarchive');
@@ -75,6 +76,13 @@ test('preview overlays the v6 rollback with noindex while production remains on 
   expect(productionBody).not.toContain('Черновик версии 4:');
 });
 
+test('preview gateway rejects unauthenticated traffic and marks the raw response noindex', async () => {
+  const response = await fetch('http://127.0.0.1:4322/ru/ipoteka/konsultaciya');
+  expect(response.status).toBe(401);
+  expect(response.headers.get('www-authenticate')).toContain('Basic realm="DOMUS Preview"');
+  expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow, noarchive');
+});
+
 test('publishes one runtime sitemap and exposes no generated sitemap files in preview', async ({ request }) => {
   const publicSitemap = await request.get('http://127.0.0.1:4321/sitemap.xml');
   expect(publicSitemap.status()).toBe(200);
@@ -85,10 +93,12 @@ test('publishes one runtime sitemap and exposes no generated sitemap files in pr
 
   const previewSitemap = await request.get('http://127.0.0.1:4322/sitemap.xml');
   expect(previewSitemap.status()).toBe(404);
+  expect(previewSitemap.headers()['x-robots-tag']).toBe('noindex, nofollow, noarchive');
 
   for (const path of ['/sitemap-index.xml', '/sitemap-0.xml']) {
     const previewResponse = await request.get(`http://127.0.0.1:4322${path}`, { maxRedirects: 0 });
     expect(previewResponse.status(), path).toBe(302);
     expect(previewResponse.headers().location, path).toBe('/404');
+    expect(previewResponse.headers()['x-robots-tag']).toBe('noindex, nofollow, noarchive');
   }
 });
