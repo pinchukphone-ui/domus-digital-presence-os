@@ -76,7 +76,7 @@
 ## Separate public and preview renderer credentials
 
 - Общий renderer token заменён двумя случайными локальными credentials, которые не входят в Git и принадлежат разным Directus service users/roles/policies.
-- Public policy: 4 read permissions без `language_versions` (HTTP 403); published-only rows фильтрует public adapter. Directus Core 12.1.1 вернул `RESOURCE_RESTRICTED` для custom item rules, это явно сохранённое ограничение до внешнего deployment.
+- Public policy: 4 read permissions только на `published_*` projections. Исходные `pages` и `language_versions` возвращают public credential HTTP 403; preview credential читает исходные страницы и версии. PostgreSQL projections исключают draft-страницы и обновляются в транзакции с исходными таблицами, поэтому ограничение Directus Core 12.1.1 на custom item rules больше не оставляет черновики доступными public renderer credential.
 - Preview policy: 5 read permissions, включая `language_versions` HTTP 200. Запись обоими credentials, `hubs` и schema snapshot возвращают HTTP 403.
 - `pnpm directus:apply-renderer-access` идемпотентно применяет metadata, перезапускает Directus для сброса permission cache, пересоздаёт renderer-контейнеры без повторного metadata запуска и выполняет REST security gate.
 - Перед изменением создан и проверен backup `domus-20260718T162512Z.sql.gz`; public v3 / preview v4 boundary после ротации сохранена.

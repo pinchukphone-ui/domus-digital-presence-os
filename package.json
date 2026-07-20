@@ -14,7 +14,7 @@
     "audit:dependencies": "pnpm audit --audit-level high",
     "validate": "pnpm audit:dependencies && pnpm typecheck && pnpm lint && pnpm test && pnpm build && pnpm validate:content",
     "validate:content": "tsx packages/testing/src/validate-content.ts",
-    "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/migrations/001_content_schema.sql",
+    "db:migrate": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/migrations/001_content_schema.sql -f infrastructure/database/migrations/002_published_projections.sql",
     "db:seed": "psql \"$DATABASE_URL\" -v ON_ERROR_STOP=1 -f infrastructure/database/seeds/001_mortgage_hub.sql",
     "db:prepare-service-ru-review": "bash infrastructure/database/apply-service-ru-review.sh",
     "db:publish-service-ru-local": "bash infrastructure/database/publish-service-ru-local.sh",

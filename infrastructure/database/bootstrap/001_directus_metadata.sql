@@ -24,7 +24,11 @@ VALUES
   ('ctas', 'ads_click', 'Localized calls to action', '{{label}}', false, false, null, null, null, 6, 'open'),
   ('internal_links', 'link', 'Explicit internal-link graph', '{{label}}', false, false, null, null, null, 7, 'open'),
   ('media_assets', 'perm_media', 'Media metadata and rights source', '{{id}}', false, false, null, null, null, 8, 'open'),
-  ('change_tasks', 'task_alt', 'Auditable content and deployment changes', '{{title}}', false, false, null, null, null, 9, 'open')
+  ('change_tasks', 'task_alt', 'Auditable content and deployment changes', '{{title}}', false, false, null, null, null, 9, 'open'),
+  ('published_pages', 'visibility', 'Read-only published page projection for the public renderer', '{{title}}', true, false, null, null, null, 10, 'closed'),
+  ('published_content_blocks', 'visibility', 'Read-only published block projection for the public renderer', '{{heading}}', true, false, null, null, null, 11, 'closed'),
+  ('published_ctas', 'visibility', 'Read-only published CTA projection for the public renderer', '{{label}}', true, false, null, null, null, 12, 'closed'),
+  ('published_internal_links', 'visibility', 'Read-only published link projection for the public renderer', '{{label}}', true, false, null, null, null, 13, 'closed')
 ON CONFLICT (collection) DO UPDATE SET
   icon = EXCLUDED.icon,
   note = EXCLUDED.note,
@@ -142,10 +146,10 @@ WHERE policy IN (
 
 INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
 VALUES
-  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'pages', 'read', NULL, NULL, NULL, '*'),
-  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'content_blocks', 'read', NULL, NULL, NULL, '*'),
-  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'internal_links', 'read', NULL, NULL, NULL, '*'),
-  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'ctas', 'read', NULL, NULL, NULL, '*');
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_pages', 'read', NULL, NULL, NULL, '*'),
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_content_blocks', 'read', NULL, NULL, NULL, '*'),
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_internal_links', 'read', NULL, NULL, NULL, '*'),
+  ('cd1a1d45-086a-4d18-a5ae-44d0066e47e4', 'published_ctas', 'read', NULL, NULL, NULL, '*');
 
 INSERT INTO directus_permissions (policy, collection, action, permissions, validation, presets, fields)
 SELECT
