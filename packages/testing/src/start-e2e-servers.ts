@@ -59,17 +59,30 @@ try {
   });
   await requireSuccessfulExit(build, 'Astro build');
 
+  const gatewayBuild = startProcess('pnpm', ['--filter', '@domus/preview', 'build']);
+  await requireSuccessfulExit(gatewayBuild, 'Preview gateway build');
+
   // Start preview first so the public health check cannot release Playwright
   // until both runtime instances are ready.
   const preview = startProcess('node', ['apps/public-web/dist/server/entry.mjs'], {
     HOST: '127.0.0.1',
-    PORT: '4322',
+    PORT: '4323',
     CONTENT_SOURCE: 'fixture',
     PREVIEW_MODE: 'true',
     PREVIEW_SITE_URL: 'http://127.0.0.1:4322'
   });
   runningServers.push(preview);
-  await waitUntilHealthy('http://127.0.0.1:4322/healthz', preview);
+  await waitUntilHealthy('http://127.0.0.1:4323/healthz', preview);
+
+  const previewGateway = startProcess('node', ['apps/preview/dist/server.js'], {
+    HOST: '127.0.0.1',
+    PORT: '4322',
+    PREVIEW_UPSTREAM_URL: 'http://127.0.0.1:4323',
+    PREVIEW_AUTH_USER: 'preview',
+    PREVIEW_AUTH_PASSWORD: 'preview-test-password'
+  });
+  runningServers.push(previewGateway);
+  await waitUntilHealthy('http://127.0.0.1:4322/healthz', previewGateway);
 
   const publicWeb = startProcess('node', ['apps/public-web/dist/server/entry.mjs'], {
     HOST: '127.0.0.1',

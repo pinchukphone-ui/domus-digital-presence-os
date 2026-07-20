@@ -19,5 +19,6 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e
       - run: docker build -f apps/public-web/Dockerfile .
+      - run: docker build -f apps/preview/Dockerfile .
       - run: docker build -t domus-postgres-ci -f infrastructure/docker/postgres/Dockerfile .
       - run: docker run --rm domus-postgres-ci sh -c 'test ! -e /usr/local/bin/gosu && test -x /sbin/su-exec && /sbin/su-exec postgres postgres --version'

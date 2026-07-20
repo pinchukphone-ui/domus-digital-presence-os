@@ -105,11 +105,11 @@ export async function applyDirectusContentChange(input: unknown, options: ApplyO
   return { manifest, candidate: storedCandidate, task: storedTask };
 }
 
-export async function verifyRenderedContentChange(manifestInput: unknown, fetchImpl: Fetch = fetch) {
+export async function verifyRenderedContentChange(manifestInput: unknown, fetchImpl: Fetch = fetch, previewAuthorization?: string) {
   const manifest = DirectusContentChangeManifestSchema.parse(manifestInput);
   const [publicResponse, previewResponse] = await Promise.all([
     fetchImpl(manifest.public_url),
-    fetchImpl(manifest.preview_url)
+    fetchImpl(manifest.preview_url, previewAuthorization ? { headers: { Authorization: previewAuthorization } } : undefined)
   ]);
   const [publicBody, previewBody] = await Promise.all([publicResponse.text(), previewResponse.text()]);
   if (!publicResponse.ok || !previewResponse.ok) throw new Error(`Rendered readback failed: public=${publicResponse.status} preview=${previewResponse.status}`);
@@ -119,6 +119,9 @@ export async function verifyRenderedContentChange(manifestInput: unknown, fetchI
   if (!previewBody.includes(manifest.verification.preview_body)) throw new Error('Preview does not contain the expected candidate body');
   if (!previewBody.includes(`PREVIEW · v${manifest.candidate_version}`)) throw new Error('Preview version banner is missing');
   if (!previewBody.includes('noindex,nofollow,noarchive')) throw new Error('Preview noindex boundary is missing');
+  if (previewResponse.headers.get('x-robots-tag') !== 'noindex, nofollow, noarchive') {
+    throw new Error('Preview proxy X-Robots-Tag boundary is missing');
+  }
   return { publicStatus: publicResponse.status, previewStatus: previewResponse.status };
 }
 
