@@ -1,11 +1,13 @@
 ---
 import type { Page } from '@domus/content-model';
+import { readMortgageContext } from '../lib/mortgage-calculation';
 import { ConsultationDemoForm } from './ConsultationDemoForm';
 import { MortgageCalculator } from './MortgageCalculator';
 const { page } = Astro.props as { page: Page };
 const isPolish = page.language === 'pl';
 const hasCalculator = page.blocks.some((block) => block.kind === 'calculator');
 const calculatorId = isPolish ? 'kalkulator' : 'kalkulyator';
+const mortgageContext = readMortgageContext(Astro.url.search);
 ---
 <main id="content">
   {page.breadcrumbs.length > 1 && <nav class="breadcrumbs" aria-label={isPolish ? 'Okruszki' : 'Навигационная цепочка'}>
@@ -27,8 +29,8 @@ const calculatorId = isPolish ? 'kalkulator' : 'kalkulyator';
     <section class:list={['block', `block--${block.kind}`]} id={block.kind === 'calculator' ? calculatorId : (typeof block.data.formId === 'string' ? block.data.formId : undefined)}>
       {block.heading && (page.blocks.some((item) => item.kind === 'hero') ? <h2>{block.heading}</h2> : <h1>{block.heading}</h1>)}
       {block.body && <p>{block.body}</p>}
-      {block.kind === 'calculator' && <MortgageCalculator language={page.language} consultationHref={page.cta?.href} client:load />}
-      {block.kind === 'service' && <ConsultationDemoForm language={page.language} client:load />}
+      {block.kind === 'calculator' && <MortgageCalculator language={page.language} consultationHref={page.cta?.href} initialCalculation={mortgageContext} client:load />}
+      {block.kind === 'service' && <ConsultationDemoForm language={page.language} initialCalculation={mortgageContext} client:load />}
     </section>
   ))}
   {page.links.length > 0 && <section class="links"><h2>{isPolish ? 'Czytaj dalej' : 'Читайте дальше'}</h2><ul>{page.links.map((link) => <li><a href={link.href}>{link.label}<span aria-hidden="true">→</span></a></li>)}</ul></section>}

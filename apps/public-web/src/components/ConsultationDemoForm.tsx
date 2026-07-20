@@ -1,9 +1,9 @@
-import { useEffect, useState, type SyntheticEvent } from 'react';
-import { readMortgageContext, type MortgageCalculation } from '../lib/mortgage-calculation';
+import { useState, type SyntheticEvent } from 'react';
+import { buildMortgageContextHref, type MortgageCalculation } from '../lib/mortgage-calculation';
 
-export function ConsultationDemoForm({ language }: { language: 'pl' | 'ru' }) {
+export function ConsultationDemoForm({ language, initialCalculation }: { language: 'pl' | 'ru'; initialCalculation?: MortgageCalculation | null }) {
   const [submitted, setSubmitted] = useState(false);
-  const [mortgageContext, setMortgageContext] = useState<MortgageCalculation | null>(null);
+  const mortgageContext = initialCalculation ?? null;
   const isPolish = language === 'pl';
   const copy = isPolish
     ? {
@@ -13,7 +13,8 @@ export function ConsultationDemoForm({ language }: { language: 'pl' | 'ru' }) {
         submit: 'Sprawdź formularz',
         success: 'Formularz działa. Dane nie zostały wysłane.',
         context: 'Twój orientacyjny wynik',
-        contextPayment: 'Szacowana rata'
+        contextPayment: 'Szacowana rata',
+        edit: 'Edytuj obliczenia'
       }
     : {
         email: 'Эл. почта',
@@ -22,12 +23,14 @@ export function ConsultationDemoForm({ language }: { language: 'pl' | 'ru' }) {
         submit: 'Проверить форму',
         success: 'Форма работает. Данные не были отправлены.',
         context: 'Ваш ориентировочный расчёт',
-        contextPayment: 'Ориентировочный платёж'
+        contextPayment: 'Ориентировочный платёж',
+        edit: 'Изменить расчёт'
       };
   const privacyId = `consultation-demo-privacy-${language}`;
   const locale = isPolish ? 'pl-PL' : 'ru-RU';
-
-  useEffect(() => setMortgageContext(readMortgageContext(window.location.search)), []);
+  const calculatorHref = mortgageContext
+    ? buildMortgageContextHref(isPolish ? '/pl/kredyty-hipoteczne#kalkulator' : '/ru/ipoteka#kalkulyator', mortgageContext)
+    : null;
 
   function submit(event: SyntheticEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -39,6 +42,7 @@ export function ConsultationDemoForm({ language }: { language: 'pl' | 'ru' }) {
       <strong>{copy.context}</strong>
       <span>{mortgageContext.amount.toLocaleString(locale)} PLN · {mortgageContext.years} {isPolish ? 'lat' : 'лет'} · {mortgageContext.rate.toLocaleString(locale)}%</span>
       <span>{copy.contextPayment}: <b>{Math.round(mortgageContext.payment).toLocaleString(locale)} {isPolish ? 'PLN / mies.' : 'PLN / мес.'}</b></span>
+      {calculatorHref && <a className="demo-form__edit" href={calculatorHref}>{copy.edit}</a>}
     </div>}
     <label htmlFor={`consultation-email-${language}`}>
       {copy.email}

@@ -1,26 +1,26 @@
-# Calculator context design QA
+# Calculator round-trip design QA
 
-- Source visual truth: `output/playwright/calculator-context-v2/01-source-calculator.jpg`
-- Implementation screenshot: `output/playwright/calculator-context-v2/05-implementation-calculator.jpg`
-- Supporting states: `output/playwright/calculator-context-v2/02-invalid-calculator.jpg`, `output/playwright/calculator-context-v2/04-consultation-context.jpg`
+- Source visual truth: `output/playwright/calculator-round-trip/01-source-consultation.jpg`
+- Implementation screenshot: `output/playwright/calculator-round-trip/02-implementation-consultation.jpg`
+- Supporting state: `output/playwright/calculator-round-trip/03-restored-calculator.jpg`
 - Viewport: 376 × 863 CSS pixels
-- State: RU hub, 650 000 PLN, 25 years, 7.2%, calculator result and consultation CTA visible
+- State: RU consultation, 650 000 PLN, 25 years, 7.2%, calculation context and form visible
 
 ## Full-view comparison evidence
 
-The source and implementation captures were opened together at the same viewport, route, scroll position and calculator values. The calculator card, result hierarchy, disclaimer, CTA, related-links heading and card spacing remain visually unchanged. The query-backed context is intentionally invisible until navigation.
+The source and implementation captures were opened together at the same viewport, route, scroll position and calculation values. The implementation adds one secondary text link inside the existing calculation-context panel. The form hierarchy, input width, primary button, privacy copy and surrounding page rhythm remain intact; the additional line increases the card height without hiding the primary action.
 
 ## Focused region comparison evidence
 
-The full screenshot is already a focused component-region capture: labels, inputs, result, disclaimer and CTA are readable at native mobile scale. A separate crop was not needed. The invalid state was checked independently and keeps the error next to its field without horizontal overflow. The consultation state was checked independently and places the carried calculation above the email field.
+The full screenshot is already a focused mobile component capture with readable calculation copy, link, email input, button and privacy note. A separate crop was not required. The restored-calculator capture confirms the linked destination retains all three values and the calculated payment without horizontal overflow.
 
 ## Required fidelity surfaces
 
-- Fonts and typography: existing Georgia headings and system UI text remain unchanged; weights, line heights and wrapping match the source.
-- Spacing and layout rhythm: calculator padding, grid collapse, input spacing, radius, shadow and section rhythm match the source; the validation message expands the affected field vertically without overlap.
-- Colors and visual tokens: existing paper, surface, brand and muted treatments are preserved; the error color reuses the established preview warning color.
+- Fonts and typography: the new link uses the existing system UI family and established bold weight; headings, labels and body copy are unchanged.
+- Spacing and layout rhythm: the link uses a small top gap within the context panel; existing panel padding, form gaps, radius, shadow and button dimensions are preserved.
+- Colors and visual tokens: the link uses the established strong brand color on the existing pale-green context surface; no new palette is introduced.
 - Image quality and assets: no image or icon assets are introduced or replaced.
-- Copy and content: PL/RU validation and calculation-context copy are localized and remain informational rather than advisory.
+- Copy and content: “Изменить расчёт” and “Edytuj obliczenia” are concise, localized and describe the destination directly.
 
 ## Findings
 
@@ -28,12 +28,12 @@ No actionable P0, P1 or P2 visual differences remain.
 
 ## Comparison history
 
-- Initial comparison: no P0/P1/P2 mismatch in the unchanged valid calculator state.
-- Functional state checks: invalid amount disables the consultation action and shows a localized inline error; valid values restore the result and link; consultation displays the same amount, term, rate and payment; PL/RU switching preserves the context.
-- Post-fix evidence: `03-valid-calculator.jpg`, `04-consultation-context.jpg`, and `05-implementation-calculator.jpg`.
+- Initial comparison: the new secondary action fits the existing context panel and keeps the form’s primary action visible in the same mobile viewport.
+- Functional verification: RU and PL edit links carry validated parameters back to the correct localized calculator anchor; calculator inputs and payment are restored; language switching preserves the same context.
+- Post-fix evidence: `02-implementation-consultation.jpg` and `03-restored-calculator.jpg`.
 
 ## Follow-up polish
 
-No blocking polish item. A future iteration may add an explicit “edit calculation” return link on the consultation page.
+No blocking polish item. Browser back/forward restoration is covered by URL state but could receive a dedicated history-navigation test later.
 
 final result: passed
