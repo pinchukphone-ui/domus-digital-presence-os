@@ -30,6 +30,9 @@ INSERT INTO services (id, key, language, page_id, name, description) VALUES
 ('mortgage-consultation-pl', 'mortgage-consultation', 'pl', 'service-pl', 'Konsultacja hipoteczna', 'Wsparcie w uporządkowaniu procesu finansowania.'),
 ('mortgage-consultation-ru', 'mortgage-consultation', 'ru', 'service-ru', 'Ипотечная консультация', 'Сопровождение процесса финансирования.');
 
+INSERT INTO media_assets (id, directus_file_id, alt_pl, alt_ru, rights_source) VALUES
+('55555555-5555-4555-8555-555555555555', NULL, 'Znak słowny DOMUS GLOBAL', 'Текстовый логотип DOMUS GLOBAL', 'DOMUS-owned wordmark; local pilot metadata');
+
 INSERT INTO ctas (id, page_id, label, href, style) VALUES
 ('cta-pl', 'home-pl', 'Umów konsultację', '/pl/kredyty-hipoteczne/konsultacja#formularz', 'primary'),
 ('cta-ru', 'home-ru', 'Записаться на консультацию', '/ru/ipoteka/konsultaciya#forma', 'primary');

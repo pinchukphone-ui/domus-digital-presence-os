@@ -28,7 +28,14 @@ function page(input: Omit<Page, 'hubId' | 'breadcrumbs'> & { homeLabel: string }
 }
 
 export const mortgageHubFixture: Hub = {
-  id: 'mortgage-hub', key: 'mortgage', name: 'DOMUS Mortgage Hub', pages: [
+  id: 'mortgage-hub', key: 'mortgage', name: 'DOMUS Mortgage Hub',
+  mediaAssets: [{
+    id: '55555555-5555-4555-8555-555555555555',
+    directusFileId: null,
+    alt: { pl: 'Znak słowny DOMUS GLOBAL', ru: 'Текстовый логотип DOMUS GLOBAL' },
+    rightsSource: 'DOMUS-owned wordmark; local pilot metadata'
+  }],
+  pages: [
     page({ id: 'home-pl', translationGroup: group.home, language: 'pl', slug: 'kredyty-hipoteczne', status: 'published', pageType: 'hub', homeLabel: 'Kredyty hipoteczne', title: 'Kredyt hipoteczny w Polsce — przewodnik DOMUS', metaDescription: 'Praktyczny przewodnik po kredycie hipotecznym w Polsce: zdolność kredytowa, proces, dokumenty oraz wsparcie eksperta DOMUS.', canonicalPath: '/pl/kredyty-hipoteczne', blocks: [
       { id: 'hero-pl', kind: 'hero', sort: 1, heading: 'Kredyt hipoteczny bez chaosu', body: 'Uporządkuj finansowanie zakupu nieruchomości w Polsce — od pierwszej kalkulacji do decyzji banku.', data: {} },
       { id: 'intro-pl', kind: 'rich_text', sort: 2, heading: 'Zacznij od realnego budżetu', body: 'Ten hub wyjaśnia kolejne kroki i pomaga przygotować się do rozmowy z bankiem. Materiał ma charakter informacyjny i nie stanowi porady finansowej.', data: {} },

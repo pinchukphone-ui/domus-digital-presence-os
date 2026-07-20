@@ -50,6 +50,13 @@ export const CtaSchema = z.object({
   style: z.enum(['primary', 'secondary']).default('primary')
 });
 
+export const MediaAssetSchema = z.object({
+  id: z.string().uuid(),
+  directusFileId: z.string().uuid().nullable(),
+  alt: z.object({ pl: z.string().min(1), ru: z.string().min(1) }),
+  rightsSource: z.string().min(1)
+});
+
 export const PageSchema = z.object({
   id: z.string(),
   hubId: z.string(),
@@ -73,7 +80,8 @@ export const HubSchema = z.object({
   id: z.string(),
   key: z.string(),
   name: z.string(),
-  pages: z.array(PageSchema)
+  pages: z.array(PageSchema),
+  mediaAssets: z.array(MediaAssetSchema).default([])
 });
 
 export const DirectusContentChangeManifestSchema = z.object({
@@ -114,4 +122,5 @@ export type Language = z.infer<typeof LanguageSchema>;
 export type LanguageVersionSnapshot = z.infer<typeof LanguageVersionSnapshotSchema>;
 export type Page = z.infer<typeof PageSchema>;
 export type Hub = z.infer<typeof HubSchema>;
+export type MediaAsset = z.infer<typeof MediaAssetSchema>;
 export type DirectusContentChangeManifest = z.infer<typeof DirectusContentChangeManifestSchema>;

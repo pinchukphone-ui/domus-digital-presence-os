@@ -10,6 +10,7 @@ type DbPage = {
 type DbBlock = { id: string; page_id: string; kind: Page['blocks'][number]['kind']; sort: number; heading: string | null; body: string | null; data: Record<string, unknown> | null };
 type DbLink = { source_page_id: string; target_page_id: string; label: string; href: string; relation: 'child' | 'related' | 'service' };
 type DbCta = { id: string; page_id: string; label: string; href: string; style: 'primary' | 'secondary' };
+type DbMediaAsset = { id: string; directus_file_id: string | null; alt_pl: string | null; alt_ru: string | null; rights_source: string | null };
 type DbLanguageVersion = {
   page_id: string;
   version: number;
@@ -35,26 +36,34 @@ export async function getMortgageHub(options: { includeDrafts?: boolean } = {}):
         ...link
       }))),
       ctas: mortgageHubFixture.pages.flatMap((page) => page.cta ? [{ ...page.cta, page_id: page.id }] : []),
-      versions: options.includeDrafts ? mortgageHubFixtureVersions : []
+      versions: options.includeDrafts ? mortgageHubFixtureVersions : [],
+      mediaAssets: mortgageHubFixture.mediaAssets.map((asset) => ({
+        id: asset.id,
+        directus_file_id: asset.directusFileId,
+        alt_pl: asset.alt.pl,
+        alt_ru: asset.alt.ru,
+        rights_source: asset.rightsSource
+      }))
     }, Boolean(options.includeDrafts));
   }
   const base = process.env.DIRECTUS_INTERNAL_URL ?? process.env.DIRECTUS_PUBLIC_URL;
   if (!base) throw new Error('DIRECTUS_INTERNAL_URL or DIRECTUS_PUBLIC_URL is required');
   const token = process.env.DIRECTUS_STATIC_TOKEN;
   const collection = (name: string) => options.includeDrafts ? name : `published_${name}`;
-  const [pages, blocks, links, ctas, versions] = await Promise.all([
+  const [pages, blocks, links, ctas, versions, mediaAssets] = await Promise.all([
     list<DbPage>(base, collection('pages'), token), list<DbBlock>(base, collection('content_blocks'), token),
     list<DbLink>(base, collection('internal_links'), token), list<DbCta>(base, collection('ctas'), token),
-    options.includeDrafts ? list<DbLanguageVersion>(base, 'language_versions', token) : Promise.resolve([])
+    options.includeDrafts ? list<DbLanguageVersion>(base, 'language_versions', token) : Promise.resolve([]),
+    list<DbMediaAsset>(base, 'media_assets', token)
   ]);
-  return renderMortgageHub({ pages, blocks, links, ctas, versions }, Boolean(options.includeDrafts));
+  return renderMortgageHub({ pages, blocks, links, ctas, versions, mediaAssets }, Boolean(options.includeDrafts));
 }
 
 function renderMortgageHub(
-  records: { pages: DbPage[]; blocks: DbBlock[]; links: DbLink[]; ctas: DbCta[]; versions: DbLanguageVersion[] },
+  records: { pages: DbPage[]; blocks: DbBlock[]; links: DbLink[]; ctas: DbCta[]; versions: DbLanguageVersion[]; mediaAssets: DbMediaAsset[] },
   includeDrafts: boolean
 ): Hub {
-  const { pages, blocks, links, ctas, versions } = records;
+  const { pages, blocks, links, ctas, versions, mediaAssets } = records;
   const visible = pages.filter((item) => includeDrafts ? item.status !== 'archived' : item.status === 'published');
   const visibleIds = new Set(visible.map((item) => item.id));
   const visiblePaths = new Set(visible.map((item) => item.canonical_path));
@@ -73,7 +82,15 @@ function renderMortgageHub(
       cta: ctas.find((cta) => cta.page_id === item.id && visiblePaths.has(cta.href.split('#')[0]!)) ?? null
     };
   });
-  return HubSchema.parse({ id: 'mortgage-hub', key: 'mortgage', name: 'DOMUS Mortgage Hub', pages: renderedPages });
+  return HubSchema.parse({
+    id: 'mortgage-hub', key: 'mortgage', name: 'DOMUS Mortgage Hub', pages: renderedPages,
+    mediaAssets: mediaAssets.map((asset) => ({
+      id: asset.id,
+      directusFileId: asset.directus_file_id,
+      alt: { pl: asset.alt_pl, ru: asset.alt_ru },
+      rightsSource: asset.rights_source
+    }))
+  });
 }
 
 function toDbPage(page: Page): DbPage {

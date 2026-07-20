@@ -45,6 +45,11 @@ function mockDirectus(versions: unknown[] = [draftVersion]) {
     published_internal_links: [],
     ctas: [],
     published_ctas: [],
+    media_assets: [{
+      id: '55555555-5555-4555-8555-555555555555', directus_file_id: null,
+      alt_pl: 'Znak słowny DOMUS GLOBAL', alt_ru: 'Текстовый логотип DOMUS GLOBAL',
+      rights_source: 'DOMUS-owned wordmark; local pilot metadata'
+    }],
     language_versions: versions
   };
   return vi.fn(async (input: string | URL | Request) => {
@@ -75,6 +80,7 @@ describe('version-aware Directus preview', () => {
     expect(rendered.status).toBe('published');
     expect(rendered.blocks[0]?.body).toBe('Опубликованный текст версии 3.');
     expect(rendered.previewCandidate).toBe(false);
+    expect(hub.mediaAssets).toHaveLength(1);
     expect(fetchMock.mock.calls.map(([input]) => String(input))).toContain(
       'http://directus.test/items/published_pages?limit=-1'
     );
