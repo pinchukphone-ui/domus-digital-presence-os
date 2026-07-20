@@ -1,14 +1,12 @@
 # Acceptance-аудит первого этапа
 
-Дата readback: 2026-07-19. Проверяемый commit `main`: `cab0fc344caca3d06e31c2d2d67b61633cd77d09`.
+Дата readback: 2026-07-20. Проверяемый commit `main`: `6c7b9952375cb65d4cb52f7458b4cef5cb07eb4e`.
 
 ## Итог
 
-Локальный production-like vertical slice условно принят. PostgreSQL, Directus и два Astro runtime воспроизводятся через Docker Compose; public и preview используют разные read-only credentials; PL/RU hub, SEO, draft preview, CI, backup/restore и PR workflow подтверждены.
+Локальный production-like vertical slice принят. PostgreSQL, Directus и два Astro runtime воспроизводятся через Docker Compose; public и preview используют разные read-only credentials; PL/RU hub, SEO, draft preview, CI, backup/restore, Directus-originated content workflow и PR workflow подтверждены.
 
-Внешний release не входит в текущую приёмку по решению владельца: VPS, домены, TLS, стабильные внешние URL и production rollback по digest намеренно не создавались. Fixture/Directus parity закрыта общим renderer-контрактом и E2E. До закрытия оставшегося локального пробела нельзя считать демонстрационный цикл полностью воспроизводимым только по CI:
-
-1. контентный цикл доказан транзакционными SQL/change manifests, но входящее изменение через Directus API/UI ещё не продемонстрировано.
+Внешний release не входит в текущую приёмку по решению владельца: VPS, домены, TLS, стабильные внешние URL и production rollback по digest намеренно не создавались. Fixture/Directus parity закрыта общим renderer-контрактом и E2E. Локальный демонстрационный цикл воспроизводим через backup-gated Directus REST operator: draft v5 создаётся без изменения published page/blocks, а append-only v6 восстанавливает полный snapshot v4 с сохранением истории.
 
 ## Матрица десяти задач
 
@@ -20,10 +18,10 @@
 | 4. Модель данных | Принято | Hub, Page, ContentBlock, LanguageVersion, Service, CTA, InternalLink, MediaAsset, ChangeTask; `pl`/`ru`; отдельные строки страниц и UUID `translation_group`. |
 | 5. Тестовый hub | Принято с ограничением | 1 hub, 8 страниц (4 PL + 4 RU), 2 service records, 2 CTA, calculator, demo form и внутренние связи. `media_assets` поддерживается схемой, но пилотная запись не создана. |
 | 6. Public frontend | Принято | Directus REST, Astro SSR, маршруты, title/description, canonical, hreflang, breadcrumbs, links, runtime sitemap, responsive CSS и React island. |
-| 7. Preview | Локально принято | Один renderer, v4 draft видна только в preview, meta `noindex,nofollow,noarchive`; preview sitemap закрыт. Внешние auth и proxy `X-Robots-Tag` отложены до deployment. |
+| 7. Preview | Локально принято | Один renderer, rollback v6 виден только в preview, meta `noindex,nofollow,noarchive`; public остаётся на v3, preview sitemap закрыт. Внешние auth и proxy `X-Robots-Tag` отложены до deployment. |
 | 8. Codex workflow | Принято как процесс | Короткий `AGENTS.md`, Architect/Builder/Reviewer и verification skills; branch + PR используется. Branch protection требует PR и актуальный `validate`; GitHub-native обязательный approval сейчас не настроен. |
-| 9. Автопроверки | Принято | Typecheck, lint, 31 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. Fixture моделирует ожидаемое post-drill состояние public v3 / preview rollback v6. |
-| 10. Демонстрационный цикл | Частично принято | Version/change task, preview, PR, review, merge, local promotion, verification и DB restore drill доказаны. Directus-originated write — пробел A2; внешний deployment/rollback отложены. |
+| 9. Автопроверки | Принято | Typecheck, lint, 32 unit tests, schema/content/link/SEO/hreflang validation, build и 6 E2E проходят. Fixture и live Directus подтверждают post-drill состояние public v3 / preview rollback v6. |
+| 10. Демонстрационный цикл | Локально принято | Directus REST write, immutable version/ChangeTask, preview, PR, review, merge, verification, append-only content rollback и DB restore drill доказаны. Внешний deployment/rollback отложены. |
 
 ## Итоговые материалы
 
@@ -31,10 +29,10 @@
 | --- | --- |
 | Структура, архитектурная схема и модель данных | В Git, подтверждены |
 | Команды запуска и deployment instructions | В Git, локальные команды проверены |
-| Результаты тестов | `pnpm validate`, 31/31 unit, 6/6 E2E; REST execution readback ожидает merge/approval |
+| Результаты тестов | `pnpm validate`, 32/32 unit, 6/6 fixture E2E; live Directus API/DB/HTML и rollback E2E подтверждены |
 | Preview URL | Только локальный: `http://localhost:4322/ru/ipoteka/konsultaciya` |
 | Production pilot URL | Только локальный public: `http://localhost:4321/pl/kredyty-hipoteczne`; внешнего URL нет |
-| Rollback | DB restore drill подтверждён; внешний image rollback невозможен до первого deployment |
+| Rollback | DB restore drill и append-only content rollback v6 подтверждены; внешний image rollback невозможен до первого deployment |
 | Ограничения и следующий этап | `limitations-and-next-stage.md` и backlog ниже |
 
 ## Локальные closure-задачи
@@ -51,7 +49,7 @@
 
 Readback: public fixture содержит 8 published страниц и v3; preview накладывает отдельный v4 snapshot. 26/26 unit, 6/6 E2E и live Directus public v3 / preview v4 прошли.
 
-### A2. Доказать Directus-originated content change
+### A2. Закрыто: Directus-originated content change и append-only rollback подтверждены
 
 Роль: Builder, затем независимый Reviewer. Один PR и отдельное локальное выполнение после approval.
 
@@ -61,9 +59,9 @@ Readback: public fixture содержит 8 published страниц и v3; prev
 - Скрипт и тест используют нейтральный текст без юридических утверждений и персональных данных.
 - Rollback создаёт следующую revision из предыдущего полного snapshot; история не переписывается.
 
-Implementation candidate: manifests v5/v6, backup-gated operator и mock REST contract готовы. До Reviewer approval локальный REST write намеренно не выполняется; fixture показывает ожидаемое состояние после apply + rollback.
+Readback после merge PR #19 и runtime-fix PR #20: backup-gated operator через Directus REST создал immutable v5 и `ChangeTask` со статусом `in_review`, не изменив published page/blocks. Public остался на v3, preview показал v5 с `noindex,nofollow,noarchive`. Следующая immutable v6 восстановила полный текст v4, получила статус `rolled_back` и сохранила v5 в истории.
 
-После A2 повторить `pnpm validate`, E2E против fixture и live Directus, backup/restore readback и обновить эту матрицу на `Принято локально`.
+Оба pre-change backup прошли `gzip -t`. API, PostgreSQL и HTML readback совпали; renderer boundary сохранилась: pages `200/200`, language versions `403/200`, writes `403/403`. Восемь public URL отвечают 200, public sitemap содержит 8 URL, preview sitemap закрыт; live rollback E2E и post-merge CI прошли.
 
 ## Backlog перед внешним pilot
 
