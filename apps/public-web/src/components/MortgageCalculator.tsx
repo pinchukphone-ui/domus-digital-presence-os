@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
-import { buildMortgageContextHref, calculateMortgage, mortgageLimits, type MortgageField, type MortgageValues } from '../lib/mortgage-calculation';
+import { buildMortgageContextHref, calculateMortgage, mortgageLimits, type MortgageCalculation, type MortgageField, type MortgageValues } from '../lib/mortgage-calculation';
 
-export function MortgageCalculator({ language, consultationHref }: { language: 'pl' | 'ru'; consultationHref?: string }) {
-  const [values, setValues] = useState<MortgageValues>({ amount: '500000', years: '25', rate: '7.2' });
+export function MortgageCalculator({ language, consultationHref, initialCalculation }: { language: 'pl' | 'ru'; consultationHref?: string; initialCalculation?: MortgageCalculation | null }) {
+  const [values, setValues] = useState<MortgageValues>(() => initialCalculation
+    ? { amount: String(initialCalculation.amount), years: String(initialCalculation.years), rate: String(initialCalculation.rate) }
+    : { amount: '500000', years: '25', rate: '7.2' });
   const [touched, setTouched] = useState<Partial<Record<MortgageField, boolean>>>({});
   const { calculation, invalidFields } = useMemo(() => calculateMortgage(values), [values]);
   const labels = language === 'pl'

@@ -11,9 +11,10 @@ const isPolish = page.language === 'pl';
 const homePath = isPolish ? '/pl/kredyty-hipoteczne' : '/ru/ipoteka';
 const polishPath = isPolish ? page.canonicalPath : (alternates.find((item) => item.language === 'pl')?.path ?? '/pl/kredyty-hipoteczne');
 const russianPath = !isPolish ? page.canonicalPath : (alternates.find((item) => item.language === 'ru')?.path ?? '/ru/ipoteka');
-const mortgageContext = page.blocks.some((block) => block.kind === 'service') ? readMortgageContext(Astro.url.search) : null;
-const polishNavigationPath = mortgageContext ? buildMortgageContextHref(`${polishPath}#formularz`, mortgageContext) : polishPath;
-const russianNavigationPath = mortgageContext ? buildMortgageContextHref(`${russianPath}#forma`, mortgageContext) : russianPath;
+const contextSurface = page.blocks.some((block) => block.kind === 'service') ? 'service' : (page.blocks.some((block) => block.kind === 'calculator') ? 'calculator' : null);
+const mortgageContext = contextSurface ? readMortgageContext(Astro.url.search) : null;
+const polishNavigationPath = mortgageContext ? buildMortgageContextHref(`${polishPath}${contextSurface === 'service' ? '#formularz' : '#kalkulator'}`, mortgageContext) : polishPath;
+const russianNavigationPath = mortgageContext ? buildMortgageContextHref(`${russianPath}${contextSurface === 'service' ? '#forma' : '#kalkulyator'}`, mortgageContext) : russianPath;
 ---
 <!doctype html>
 <html lang={page.language}>

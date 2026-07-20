@@ -42,6 +42,14 @@ test('calculator is an interactive React island', async ({ page }) => {
   await expect(page.getByTestId('mortgage-context')).toContainText('700 000 PLN · 25 lat · 7,2%');
   await expect(page.getByTestId('mortgage-context')).toContainText('5037 PLN / mies.');
   await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', '/ru/ipoteka/konsultaciya?amount=700000&years=25&rate=7.2#forma');
+  const editCalculation = page.getByRole('link', { name: 'Edytuj obliczenia' });
+  await expect(editCalculation).toHaveAttribute('href', '/pl/kredyty-hipoteczne?amount=700000&years=25&rate=7.2#kalkulator');
+  await editCalculation.click();
+  await expect(page).toHaveURL(`${publicOrigin}/pl/kredyty-hipoteczne?amount=700000&years=25&rate=7.2#kalkulator`);
+  await expect(page.getByLabel('Kwota kredytu (PLN)')).toHaveValue('700000');
+  await expect(page.getByLabel('Okres (lata)')).toHaveValue('25');
+  await expect(page.getByLabel('Oprocentowanie (%)')).toHaveValue('7.2');
+  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', '/ru/ipoteka?amount=700000&years=25&rate=7.2#kalkulyator');
 
   await page.goto(`${publicOrigin}/ru/ipoteka`);
   await expect(page.getByRole('link', { name: 'Обсудить этот расчёт' })).toHaveAttribute('href', '/ru/ipoteka/konsultaciya?amount=500000&years=25&rate=7.2#forma');
