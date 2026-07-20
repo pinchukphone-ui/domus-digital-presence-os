@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { applyDirectusContentChange, verifyRenderedContentChange } from '../src/content-change';
@@ -19,6 +20,8 @@ const wrapper = readFileSync(fileURLToPath(new URL(
 const packageJson = JSON.parse(readFileSync(fileURLToPath(new URL('../../../package.json', import.meta.url)), 'utf8')) as {
   scripts: Record<string, string>;
 };
+const repositoryRoot = fileURLToPath(new URL('../../..', import.meta.url));
+const operatorCli = fileURLToPath(new URL('../../../infrastructure/database/apply-directus-content-change.ts', import.meta.url));
 
 function directusMock() {
   const page = mortgageHubFixture.pages.find((candidate) => candidate.id === 'service-ru')!;
@@ -121,6 +124,18 @@ describe('Directus-originated content change', () => {
     expect(wrapper).not.toMatch(/printf[^\n]*DIRECTUS_ADMIN_TOKEN/);
     expect(packageJson.scripts['directus:apply-service-ru-v5']).toContain('service-ru-directus-v5.json');
     expect(packageJson.scripts['directus:rollback-service-ru-v6']).toContain('service-ru-directus-v6-rollback.json');
+  });
+
+  it('starts the operator CLI under the repository CommonJS tsx runtime', () => {
+    const result = spawnSync('pnpm', ['exec', 'tsx', operatorCli], {
+      cwd: repositoryRoot,
+      encoding: 'utf8',
+      timeout: 10_000
+    });
+
+    expect(result.status).not.toBe(0);
+    expect(result.stderr).toContain('Usage: apply-directus-content-change.ts <manifest.json>');
+    expect(result.stderr).not.toContain('Top-level await is currently not supported');
   });
 });
 
