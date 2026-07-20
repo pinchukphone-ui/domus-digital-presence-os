@@ -27,17 +27,24 @@ test('calculator is an interactive React island', async ({ page }) => {
   await expect(page.locator('#kalkulator')).toBeVisible();
   const result = page.locator('[data-testid="mortgage-calculator"] output strong');
   const before = await result.textContent();
+  await page.getByLabel('Kwota kredytu (PLN)').fill('5000');
+  await page.getByLabel('Kwota kredytu (PLN)').blur();
+  await expect(page.getByText('Podaj kwotę od 10 000 do 10 000 000 PLN.')).toBeVisible();
+  await expect(page.locator('.calculator__cta[aria-disabled="true"]')).toContainText('Omów ten wynik');
   await page.getByLabel('Kwota kredytu (PLN)').fill('700000');
   await expect(result).not.toHaveText(before ?? '');
   await expect(result).toContainText('PLN / mies.');
   const consultationLink = page.getByRole('link', { name: 'Omów ten wynik' });
-  await expect(consultationLink).toHaveAttribute('href', '/pl/kredyty-hipoteczne/konsultacja#formularz');
+  await expect(consultationLink).toHaveAttribute('href', '/pl/kredyty-hipoteczne/konsultacja?amount=700000&years=25&rate=7.2#formularz');
   await consultationLink.click();
-  await expect(page).toHaveURL(`${publicOrigin}/pl/kredyty-hipoteczne/konsultacja#formularz`);
+  await expect(page).toHaveURL(`${publicOrigin}/pl/kredyty-hipoteczne/konsultacja?amount=700000&years=25&rate=7.2#formularz`);
   await expect(page.getByRole('heading', { name: 'Rozmowa o Twojej sytuacji' })).toBeVisible();
+  await expect(page.getByTestId('mortgage-context')).toContainText('700 000 PLN · 25 lat · 7,2%');
+  await expect(page.getByTestId('mortgage-context')).toContainText('5037 PLN / mies.');
+  await expect(page.getByRole('link', { name: 'Русский' })).toHaveAttribute('href', '/ru/ipoteka/konsultaciya?amount=700000&years=25&rate=7.2#forma');
 
   await page.goto(`${publicOrigin}/ru/ipoteka`);
-  await expect(page.getByRole('link', { name: 'Обсудить этот расчёт' })).toHaveAttribute('href', '/ru/ipoteka/konsultaciya#forma');
+  await expect(page.getByRole('link', { name: 'Обсудить этот расчёт' })).toHaveAttribute('href', '/ru/ipoteka/konsultaciya?amount=500000&years=25&rate=7.2#forma');
 });
 
 test('exposes an accessible localized conversion path', async ({ page }) => {
