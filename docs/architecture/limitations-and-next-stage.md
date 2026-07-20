@@ -20,5 +20,5 @@
 2. Подключить управляемый PostgreSQL, object storage и автоматические encrypted backups с restore drill.
 3. Поднять preview/production domains, TLS и GitHub environments.
 4. Добавить Directus webhook → signed build trigger и content change manifest.
-5. Провести редакторскую и юридическую проверку PL/RU, accessibility audit и performance budgets.
+5. Провести редакторскую и юридическую проверку PL/RU, ручную проверку с assistive technologies/реальными устройствами и полевую проверку Core Web Vitals. Автоматический accessibility gate и asset performance budgets уже включены в локальную и CI-проверку.
 6. Добавить observability, uptime check и проверяемый incident/rollback runbook.

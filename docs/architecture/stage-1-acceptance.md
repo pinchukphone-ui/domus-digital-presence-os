@@ -20,7 +20,7 @@
 | 6. Public frontend | Принято | Directus REST, Astro SSR, маршруты, title/description, canonical, hreflang, breadcrumbs, links, runtime sitemap, responsive CSS и React island. |
 | 7. Preview | Локально принято | Один renderer, rollback v6 виден только в preview; Basic Auth, meta `noindex,nofollow,noarchive`, raw proxy `X-Robots-Tag` и закрытый preview sitemap проверяются E2E. Внешний SSO/TLS отложен до deployment. |
 | 8. Codex workflow | Принято как процесс | Короткий `AGENTS.md`, Architect/Builder/Reviewer и verification skills; branch + PR используется. Branch protection требует PR и актуальный `validate`; GitHub-native обязательный approval сейчас не настроен. |
-| 9. Автопроверки | Принято | Typecheck, lint, 37 unit tests, schema/content/link/SEO/hreflang validation, build и 7 E2E проходят. Fixture и live Directus подтверждают post-drill состояние public v3 / preview rollback v6. |
+| 9. Автопроверки | Принято | Typecheck, lint, 38 unit tests, schema/content/link/SEO/hreflang validation, build, asset performance budgets и 20 E2E проходят. Axe gate покрывает 8 desktop и 4 mobile маршрута; fixture и live Directus подтверждают post-drill состояние public v3 / preview rollback v6. |
 | 10. Демонстрационный цикл | Локально принято | Directus REST write, immutable version/ChangeTask, preview, PR, review, merge, verification, append-only content rollback и DB restore drill доказаны. Внешний deployment/rollback отложены. |
 
 ## Итоговые материалы
@@ -29,7 +29,7 @@
 | --- | --- |
 | Структура, архитектурная схема и модель данных | В Git, подтверждены |
 | Команды запуска и deployment instructions | В Git, локальные команды проверены |
-| Результаты тестов | `pnpm validate`, 37/37 unit, 7/7 fixture E2E; live Directus API/DB/HTML, preview gateway и rollback E2E подтверждены |
+| Результаты тестов | `pnpm validate`, 38/38 unit, 20/20 fixture E2E; accessibility и performance budgets, live Directus API/DB/HTML, preview gateway и rollback E2E подтверждены |
 | Preview URL | Только локальный: `http://localhost:4322/ru/ipoteka/konsultaciya` |
 | Production pilot URL | Только локальный public: `http://localhost:4321/pl/kredyty-hipoteczne`; внешнего URL нет |
 | Rollback | DB restore drill и append-only content rollback v6 подтверждены; внешний image rollback невозможен до первого deployment |
@@ -71,7 +71,7 @@ Readback после merge PR #19 и runtime-fix PR #20: backup-gated operator ч
 2. Published-only enforcement на уровне Directus API/view или подтверждённого лицензированного permission tier.
 3. Hetzner/Caddy provisioning, TLS, domains и environment-scoped SSH secrets.
 4. Off-host encrypted database/uploads backup с retention и restore drill.
-5. Редакторская/юридическая PL/RU проверка, accessibility audit и performance budgets.
+5. Редакторская/юридическая PL/RU проверка, ручная assistive-technology/real-device проверка и field Core Web Vitals. Автоматические accessibility и asset-budget проверки закрыты.
 6. Health/uptime monitoring, логи, alert routing и incident/rollback rehearsal.
 
 Включение `DEPLOYMENT_ENABLED=true` и production deployment остаются отдельным решением владельца после Reviewer `Approved`.
