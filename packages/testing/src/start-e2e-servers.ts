@@ -55,7 +55,7 @@ try {
   const build = startProcess('pnpm', ['--filter', '@domus/public-web', 'build'], {
     CONTENT_SOURCE: 'fixture',
     PREVIEW_MODE: 'false',
-    PUBLIC_SITE_URL: 'http://127.0.0.1:4321'
+    PUBLIC_SITE_URL: 'http://127.0.0.1:4421'
   });
   await requireSuccessfulExit(build, 'Astro build');
 
@@ -66,30 +66,30 @@ try {
   // until both runtime instances are ready.
   const preview = startProcess('node', ['apps/public-web/dist/server/entry.mjs'], {
     HOST: '127.0.0.1',
-    PORT: '4323',
+    PORT: '4423',
     CONTENT_SOURCE: 'fixture',
     PREVIEW_MODE: 'true',
-    PREVIEW_SITE_URL: 'http://127.0.0.1:4322'
+    PREVIEW_SITE_URL: 'http://127.0.0.1:4422'
   });
   runningServers.push(preview);
-  await waitUntilHealthy('http://127.0.0.1:4323/healthz', preview);
+  await waitUntilHealthy('http://127.0.0.1:4423/healthz', preview);
 
   const previewGateway = startProcess('node', ['apps/preview/dist/server.js'], {
     HOST: '127.0.0.1',
-    PORT: '4322',
-    PREVIEW_UPSTREAM_URL: 'http://127.0.0.1:4323',
+    PORT: '4422',
+    PREVIEW_UPSTREAM_URL: 'http://127.0.0.1:4423',
     PREVIEW_AUTH_USER: 'preview',
     PREVIEW_AUTH_PASSWORD: 'preview-test-password'
   });
   runningServers.push(previewGateway);
-  await waitUntilHealthy('http://127.0.0.1:4322/healthz', previewGateway);
+  await waitUntilHealthy('http://127.0.0.1:4422/healthz', previewGateway);
 
   const publicWeb = startProcess('node', ['apps/public-web/dist/server/entry.mjs'], {
     HOST: '127.0.0.1',
-    PORT: '4321',
+    PORT: '4421',
     CONTENT_SOURCE: 'fixture',
     PREVIEW_MODE: 'false',
-    PUBLIC_SITE_URL: 'http://127.0.0.1:4321'
+    PUBLIC_SITE_URL: 'http://127.0.0.1:4421'
   });
   runningServers.push(publicWeb);
 
