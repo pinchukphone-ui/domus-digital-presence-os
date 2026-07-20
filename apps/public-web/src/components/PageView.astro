@@ -27,7 +27,7 @@ const calculatorId = isPolish ? 'kalkulator' : 'kalkulyator';
     <section class:list={['block', `block--${block.kind}`]} id={block.kind === 'calculator' ? calculatorId : (typeof block.data.formId === 'string' ? block.data.formId : undefined)}>
       {block.heading && (page.blocks.some((item) => item.kind === 'hero') ? <h2>{block.heading}</h2> : <h1>{block.heading}</h1>)}
       {block.body && <p>{block.body}</p>}
-      {block.kind === 'calculator' && <MortgageCalculator language={page.language} client:load />}
+      {block.kind === 'calculator' && <MortgageCalculator language={page.language} consultationHref={page.cta?.href} client:load />}
       {block.kind === 'service' && <ConsultationDemoForm language={page.language} client:load />}
     </section>
   ))}

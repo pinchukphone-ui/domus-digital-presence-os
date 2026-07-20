@@ -30,6 +30,14 @@ test('calculator is an interactive React island', async ({ page }) => {
   await page.getByLabel('Kwota kredytu (PLN)').fill('700000');
   await expect(result).not.toHaveText(before ?? '');
   await expect(result).toContainText('PLN / mies.');
+  const consultationLink = page.getByRole('link', { name: 'Omów ten wynik' });
+  await expect(consultationLink).toHaveAttribute('href', '/pl/kredyty-hipoteczne/konsultacja#formularz');
+  await consultationLink.click();
+  await expect(page).toHaveURL(`${publicOrigin}/pl/kredyty-hipoteczne/konsultacja#formularz`);
+  await expect(page.getByRole('heading', { name: 'Rozmowa o Twojej sytuacji' })).toBeVisible();
+
+  await page.goto(`${publicOrigin}/ru/ipoteka`);
+  await expect(page.getByRole('link', { name: 'Обсудить этот расчёт' })).toHaveAttribute('href', '/ru/ipoteka/konsultaciya#forma');
 });
 
 test('exposes an accessible localized conversion path', async ({ page }) => {
