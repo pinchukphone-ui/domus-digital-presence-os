@@ -5,5 +5,5 @@
   "exports": "./src/index.ts",
   "scripts": { "typecheck": "tsc --noEmit", "test": "vitest run" },
   "dependencies": { "@domus/content-model": "workspace:*" },
-  "devDependencies": { "@domus/api-client": "workspace:*", "typescript": "^5.8.3", "vitest": "^3.2.4" }
+  "devDependencies": { "@domus/api-client": "workspace:*", "typescript": "^5.8.3", "vitest": "^4.1.11" }
 }
